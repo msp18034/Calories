@@ -1,0 +1,41 @@
+{
+    "model" : {
+        "architecture":         "YOLOFLY",
+        "input_size":           416,
+        "min_input_size":       320,
+        "max_input_size":       448,
+        "tf_input_size":        [500, 500, 3],
+        "anchors":              [24,38, 51,88, 72,190, 124,292, 132,97, 177,183, 226,326, 335,190, 367,360],
+        "labels":               ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"],
+        "name":                 "vocall.ckpt"
+    },
+
+    "train": {
+        "learning_rate":        1e-4,
+
+        "batch_size":           8,
+        "accumulate":           8,
+        "epoch_size":           250,
+
+        "train_epoch":          700,
+        "warm_up_epoch":        3,
+
+        "ignore_thresh":        0.5,
+        "max_box_per_image":    40,
+
+        "grid_scales":          [1,1,1],
+        "obj_scale":            5,
+        "noobj_scale":          1,
+        "xywh_scale":           1,
+        "class_scale":          1,
+
+        "tfrecord":             "trainval/trainval.tfrecord.*",
+
+        "summary_step":         20
+    },
+
+    "val": {
+        "tfrecord":             "test/test.tfrecord.*",
+        "epoch_size":           50
+    }
+}

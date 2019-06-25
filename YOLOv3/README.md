@@ -26,6 +26,7 @@ YOLOv3 implemented with distributed tensorflow including train and inference mod
 >convert `VOC Annotation Format` image and label into tfrecord under `data/tfrecord/`
 
     ./run_prepare.sh -t
+    or bash ./run_prepare.sh -t
 
 ###### 3. train
 >confirm all parameters in the config file before begining to train, refering to `yolo_darknet53_voc.json` <br>
@@ -33,6 +34,7 @@ YOLOv3 implemented with distributed tensorflow including train and inference mod
 >of course you can train with random initialization, for my limited experience, it could get similar mAP if your problem is not very complex like coco. I got very similar mAP on my other tasks execpt for convergence speed.
 
     ./run_train.sh -l
+    or bash ./run_train.sh -l
 
 >you must change the data path and model storage directory parameters and rewrite `distributed_train()` in `run_train.sh`, then replace `-l` with `-r`
 

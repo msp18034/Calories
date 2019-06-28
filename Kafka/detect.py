@@ -92,6 +92,14 @@ class Spark_Calorie_Calculator():
             self.logger.info('Done after ' + str(delta) + ' seconds.')
             self.logger.info('Find'+len(pre_classes) + 'dish(s).')
             #TODO: 这里的操作需要用map写吗？后续操作：每个切完片的图进一步预测分类和营养成分，将最终画好的图返回客户端，
+            result={'user': event['user'],
+                    'class':"Fish"}
+            self.outputResult(json.dumps(result))
+    
+    def outputResult(self,message):
+        self.logger.info("Now sending out....")
+        self.producer.send(self.topic_for_produce,message.encode('utf-8'))
+        self.producer.flush()
 
     def drawboxes(self, image, boxes, final_classes, calories):
         font = ImageFont.truetype(size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))

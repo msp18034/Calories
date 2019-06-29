@@ -11,7 +11,7 @@ from keras.layers.normalization import BatchNormalization
 from keras.models import Model
 from keras.regularizers import l2
 
-from yolov3_keras.utils import compose
+from Kafka.yolov3_keras.utils import compose
 
 
 @wraps(Conv2D)

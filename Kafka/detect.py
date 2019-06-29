@@ -15,7 +15,7 @@ from pyspark.streaming.kafka import KafkaUtils
 from kafka import KafkaProducer
 
 # Model imports
-from yolov3_keras.yolo import YOLO
+from Kafka.yolov3_keras.yolo import YOLO
 
 
 class Spark_Calorie_Calculator():
@@ -29,6 +29,7 @@ class Spark_Calorie_Calculator():
         self.topic_to_consume = topic_to_consume
         self.topic_for_produce = topic_for_produce
         self.kafka_endpoint = kafka_endpoint
+        self.producer = KafkaProducer(bootstrap_servers=kafka_endpoint)
 
         # Load Spark Context
         sc = SparkContext(appName='MultiFood_detection')
@@ -43,9 +44,8 @@ class Spark_Calorie_Calculator():
         self.logger = log4jLogger.LogManager.getLogger(__name__)
 
         # Load Network Model & Broadcast to Worker Nodes
-        #model_od = YOLO()
+        self.model_od = YOLO()
         #self.model_od_bc = sc.broadcast(model_od)
-        self.model_od_bc = YOLO()
 
     def start_processing(self):
         zookeeper = "G4master:2181,G401:2181,G402:2181,G403:2181,G404:2181,G405:2181,G406:2181,G407:2181," \
@@ -78,34 +78,38 @@ class Spark_Calorie_Calculator():
             stream = BytesIO(decoded)
             image = Image.open(stream)
             start = timer()
-            print(self.model_od_bc.class_names)
-            pre_classes, boxes = self.model_od_bc.detect_image(image)
+            print(self.model_od.class_names)
+            pre_classes, boxes, single_foods = self.model_od.detect_image(image)
             end = timer()
             delta = end - start
 
             #get calories
             calories = []
             for dish in pre_classes:
-                calorie = 100
+                import random
+                calorie = random.randint(100, 500)
                 calories.append(calorie)
 
-            drawed_img = self.drawboxes(image, boxes, pre_classes, calories)
+            drawn_img = self.drawboxes(image, boxes, pre_classes, calories)
 
             self.logger.info('Done after ' + str(delta) + ' seconds.')
-            self.logger.info('Find'+len(pre_classes) + 'dish(s).')
+            self.logger.info('Find'+str(len(pre_classes)) + 'dish(s).')
             #TODO: 这里的操作需要用map写吗？后续操作：每个切完片的图进一步预测分类和营养成分，将最终画好的图返回客户端，
             result={'user': event['user'],
-                    'class':pre_classes[0],
-                    'caloreis':calories[0]}
+                    'class': pre_classes[0],
+                    'calories': calories[0],
+                    #'drawn_img': drawn_img,
+                    'process_time': delta}
             self.outputResult(json.dumps(result))
     
-    def outputResult(self,message):
+    def outputResult(self, message):
         self.logger.info("Now sending out....")
-        self.producer.send(self.topic_for_produce,message.encode('utf-8'))
+        self.producer.send(self.topic_for_produce, message.encode('utf-8'))
         self.producer.flush()
 
     def drawboxes(self, image, boxes, final_classes, calories):
-        font = ImageFont.truetype(size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
+        font = ImageFont.truetype(font='/home/hduser/Calories/FiraMono-Medium.otf',
+                                  size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
         thickness = (image.size[0] + image.size[1]) // 300
         for i in range(len(boxes)):
             cls = final_classes[i]
@@ -123,13 +127,13 @@ class Spark_Calorie_Calculator():
                 text_origin = np.array([left, top + 1])
 
             #TODO:这里使用的颜色序号有问题！请使用分类模型生成颜色！
-            for i in range(thickness):
+            for j in range(thickness):
                 draw.rectangle(
-                    [left + i, top + i, right - i, bottom - i],
-                    outline=self.model_od_bc.colors[i])
+                    [left + j, top + j, right - j, bottom - j],
+                    outline=self.model_od.colors[i])
             draw.rectangle(
                 [tuple(text_origin), tuple(text_origin + label_size)],
-                fill=self.model_od_bc.colors[i])
+                fill=self.model_od.colors[i])
             draw.text(text_origin, label, fill=(0, 0, 0), font=font)
             del draw
         return image

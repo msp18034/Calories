@@ -43,8 +43,9 @@ class Spark_Calorie_Calculator():
         self.logger = log4jLogger.LogManager.getLogger(__name__)
 
         # Load Network Model & Broadcast to Worker Nodes
-        model_od = YOLO()
-        self.model_od_bc = sc.broadcast(model_od)
+        #model_od = YOLO()
+        #self.model_od_bc = sc.broadcast(model_od)
+        self.model_od_bc = YOLO()
 
     def start_processing(self):
         zookeeper = "G4master:2181,G401:2181,G402:2181,G403:2181,G404:2181,G405:2181,G406:2181,G407:2181," \
@@ -77,13 +78,14 @@ class Spark_Calorie_Calculator():
             stream = BytesIO(decoded)
             image = Image.open(stream)
             start = timer()
-            pre_classes, boxes, single_food_imgs = self.model_od_bc.detect_image(image)
+            print(self.model_od_bc.class_names)
+            pre_classes, boxes = self.model_od_bc.detect_image(image)
             end = timer()
             delta = end - start
 
             #get calories
             calories = []
-            for dish in single_food_imgs:
+            for dish in pre_classes:
                 calorie = 100
                 calories.append(calorie)
 
@@ -93,7 +95,8 @@ class Spark_Calorie_Calculator():
             self.logger.info('Find'+len(pre_classes) + 'dish(s).')
             #TODO: 这里的操作需要用map写吗？后续操作：每个切完片的图进一步预测分类和营养成分，将最终画好的图返回客户端，
             result={'user': event['user'],
-                    'class':"Fish"}
+                    'class':pre_classes[0],
+                    'caloreis':calories[0]}
             self.outputResult(json.dumps(result))
     
     def outputResult(self,message):

@@ -15,7 +15,7 @@ from pyspark.streaming.kafka import KafkaUtils
 from kafka import KafkaProducer
 
 # Model imports
-from Kafka.yolov3_keras.yolo import YOLO
+from yolov3_keras.yolo import YOLO
 
 
 class Spark_Calorie_Calculator():
@@ -50,11 +50,10 @@ class Spark_Calorie_Calculator():
     def start_processing(self):
         zookeeper = "G4master:2181,G401:2181,G402:2181,G403:2181,G404:2181,G405:2181,G406:2181,G407:2181," \
                     "G408:2181,G409:2181,G410:2181,G411:2181,G412:2181,G413:2181,G414:2181,G415:2181"
-        topic = {"test": 0, "test": 1, "test": 2}
         groupid = "test-consumer-group"
 
         """Start consuming from Kafka endpoint and detect objects."""
-        kvs = KafkaUtils.createStream(self.ssc, zookeeper, groupid, topic)
+        kvs = KafkaUtils.createStream(self.ssc, zookeeper, groupid, self.topic_to_consume)
 
         kvs.foreachRDD(self.handler)
         self.ssc.start()
@@ -141,8 +140,8 @@ class Spark_Calorie_Calculator():
 
 if __name__ == '__main__':
     sod = Spark_Calorie_Calculator(
-        topic_to_consume="test",
-        topic_for_produce='test',
+        topic_to_consume= {"inputImage": 0, "inputImage": 1, "inputImage": 2},
+        topic_for_produce= "outputResult",
         kafka_endpoint="G4master:9092,G401:9092,G402:9092,G403:9092,G404:9092,"
                        "G405:9092,G406:9092,G407:9092,G408:9092,G409:9092,G410:9092,"
                        "G411:9092,G412:9092,G413:9092,G414:9092,G415:9092")

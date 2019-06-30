@@ -10,8 +10,8 @@ from keras import backend as K
 from keras.models import load_model
 from keras.layers import Input
 
-from Kafka.yolov3_keras.model import yolo_eval, yolo_body, tiny_yolo_body
-from Kafka.yolov3_keras.utils import letterbox_image
+from yolov3_keras.model import yolo_eval, yolo_body, tiny_yolo_body
+from yolov3_keras.utils import letterbox_image
 import os
 
 

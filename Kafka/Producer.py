@@ -48,9 +48,9 @@ class Kafka_producer():
         print(base64_str)
         return base64_str
 def main():
-    producer = Kafka_producer("G4master", 9092, "test")
+    producer = Kafka_producer("G4master", 9092, "inputImage")
     for i in range(10):
         params = '{abetst}:{null}---'+str(i)
-        producer.sendjsondata("AH.jpg")
+        producer.sendjsondata("test_img.jpg")
         time.sleep(4)
 main()

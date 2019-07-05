@@ -41,7 +41,7 @@ def image_to_base64(image_path):
 
 def main():
     producer = Kafka_producer("G4master", 9092, "inputImage")
-    for i in range(2):
+    for i in range(3):
         image = image_to_base64("/home/hduser/test_img.jpg")
         result = {
             'image': image,

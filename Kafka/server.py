@@ -12,18 +12,15 @@ class MyHandler(BaseHTTPRequestHandler):
         # self.wfile.write("这是一个http后台服务。".encode())
 
     def do_POST(self):
-        self.send_header('Content-type', 'text/html')
         form = cgi.FieldStorage(fp=self.rfile, headers=self.headers,
                                 environ={'REQUEST_METHOD': 'POST'})
-
         userid = form.getvalue("user")
         image = form.getvalue("image")
-
         result = {
             'image': image,
             'user': userid
         }
-        print(userid)
+        print("Receive info from",userid)
 
         producer = Kafka_producer("G4master", 9092, "inputImage")
         producer.sendjsondata(result)
@@ -32,11 +29,10 @@ class MyHandler(BaseHTTPRequestHandler):
         jsonData = consumer.getUserFeedback(userid)
         json_str = json.dumps(jsonData)
         json_encode = json_str.encode("utf-8")
+        
         self.send_response(200)
         self.end_headers()
         self.wfile.write(json_encode)
-        #self.send_response(200)
-        #self.end_headers()
 
 
 def main():
@@ -51,3 +47,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

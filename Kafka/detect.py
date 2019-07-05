@@ -13,7 +13,7 @@ from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
 from kafka import KafkaProducer
-import random
+
 # Model imports
 from yolov3_keras.yolo import YOLO
 
@@ -25,7 +25,7 @@ class Spark_Calorie_Calculator():
                  topic_to_consume='instream',
                  topic_for_produce='ourstream',
                  kafka_endpoint='127.0.0.1:9092',
-                 model_path='model.h5'):
+                 model_path='/home/hduser/model.h5'):
         """Initialize Spark & TensorFlow environment."""
         self.topic_to_consume = topic_to_consume
         self.topic_for_produce = topic_for_produce
@@ -43,13 +43,13 @@ class Spark_Calorie_Calculator():
         log4jLogger.LogManager.getLogger('akka').setLevel(log_level)
         log4jLogger.LogManager.getLogger('kafka').setLevel(log_level)
         self.logger = log4jLogger.LogManager.getLogger(__name__)
-        self.classifier = keras.models.load_model(model_path)
-        self.classifier._make_predict_function()
 
         # Load Network Model & Broadcast to Worker Nodes
         self.model_od = YOLO()
-        #self.model_od_bc = sc.broadcast(model_od)
+        self.classifier = keras.models.load_model(model_path)
+        self.classifier._make_predict_function()
         self.names = ["class0", "class1", "class2"]
+
     def start_processing(self):
         zookeeper = "G4master:2181,G401:2181,G402:2181,G403:2181,G404:2181,G405:2181,G406:2181,G407:2181," \
                     "G408:2181,G409:2181,G410:2181,G411:2181,G412:2181,G413:2181,G414:2181,G415:2181"
@@ -75,22 +75,25 @@ class Spark_Calorie_Calculator():
 
         for record in records:
             event = json.loads(record[1])
-            self.logger.info('Received Message from: ' + event['user'])
+            self.logger.info('Received Message from:' + event['user'])
             decoded = base64.b64decode(event['image'])
             stream = BytesIO(decoded)
             image = Image.open(stream)
             start = timer()
-            print(self.model_od.class_names)
+
             pre_classes, boxes, single_foods = self.model_od.detect_image(image)
+
             actual = []
             for food in single_foods:
                 images = []
                 images.append(food)
+
                 images = np.array(images)
-                print(images.shape)
+
+                #print(images.shape)
                 ingredients, actual_class = self.classifier.predict(images)
                 index = np.argmax(actual_class)
-
+                print('class index:', index)
                 actual.append(index)
             actual = [self.names[x] for x in actual]
 
@@ -98,11 +101,15 @@ class Spark_Calorie_Calculator():
             calories = []
             for dish in actual:
                 #    _,=self.classifier.predict(
-                calorie = random.randint(100, 500)
+                calorie = randint(100, 500)
                 calories.append(calorie)
 
-            drawn_img = self.drawboxes(image, boxes,actual, calories)
-            drawn_img_b = base64.b64encode(drawn_img).decode('utf-8')
+            drawn_img = self.drawboxes(image, boxes, actual, calories)
+            img_out_buffer = BytesIO()
+            drawn_img.save(img_out_buffer, format='png')
+            byte_data = img_out_buffer.getvalue()
+            drawn_img_b = base64.b64encode(byte_data).decode('utf-8')
+
             end = timer()
             delta = end - start
 
@@ -110,11 +117,12 @@ class Spark_Calorie_Calculator():
             self.logger.info('Find'+str(len(pre_classes)) + 'dish(s).')
             #TODO: 这里的操作需要用map写吗？后续操作：每个切完片的图进一步预测分类和营养成分，将最终画好的图返回客户端，
             result = {'user': event['user'],
-                    'class': actual,
-                    'calories': calories,
-                    'drawn_img': drawn_img_b,
-                    'process_time': delta
-                    }
+                      'class': actual,
+                      'calories': calories,
+                      'drawn_img': drawn_img_b,
+                      'process_time': delta
+                      }
+
             self.outputResult(json.dumps(result))
 
     def outputResult(self, message):

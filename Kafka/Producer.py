@@ -17,7 +17,7 @@ class Kafka_producer():
         self.producer = KafkaProducer(bootstrap_servers = '{kafka_host}:{kafka_port}'.format(
             kafka_host=self.kafkaHost,
             kafka_port=self.kafkaPort
-            ))
+        ))
 
     def sendjsondata(self, result):
         try:
@@ -35,18 +35,19 @@ def image_to_base64(image_path):
     img.save(output_buffer, format='JPEG')
     byte_data = output_buffer.getvalue()
     base64_str = base64.b64encode(byte_data).decode('utf-8')
-    print(base64_str)
+    #print(base64_str)
     return base64_str
 
 
 def main():
     producer = Kafka_producer("G4master", 9092, "inputImage")
-    for i in range(10):
-        image = image_to_base64("/home/hduser/Calories/1_24.jpg")
+    for i in range(2):
+        image = image_to_base64("/home/hduser/test_img.jpg")
         result = {
             'image': image,
             'user': "hduser"
         }
+        print(str(i+1), "ok")
         producer.sendjsondata(result)
         time.sleep(4)
 

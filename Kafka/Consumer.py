@@ -33,6 +33,7 @@ def main():
     if userid == '':
         userid = "hduser"
     json_back = consumer.getUserFeedback(userid)
+    # json_str = json.dump(json_back)
     print(json_back)
 
 

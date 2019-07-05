@@ -129,22 +129,28 @@ class YOLO(object):
 
         for i, c in reversed(list(enumerate(out_classes))):
             predicted_cls = self.class_names[c]
-            predicted_classes.append(predicted_cls)
-            box = out_boxes[i]
-            score = out_scores[i]
+            # TODO:筛选更多的分类
+            if predicted_cls == "bowl":
+                predicted_classes.append(predicted_cls)
+                box = out_boxes[i]
+                score = out_scores[i]
 
-            label = '{} {:.2f}'.format(predicted_cls, score)
-            top, left, bottom, right = box
-            top = max(0, np.floor(top + 0.5).astype('int32'))
-            left = max(0, np.floor(left + 0.5).astype('int32'))
-            bottom = min(image.size[1], np.floor(bottom + 0.5).astype('int32'))
-            right = min(image.size[0], np.floor(right + 0.5).astype('int32'))
-            print(label, (left, top), (right, bottom))
+                # 获取每个框的位置
+                label = '{} {:.2f}'.format(predicted_cls, score)
+                top, left, bottom, right = box
+                top = max(0, np.floor(top + 0.5).astype('int32'))
+                left = max(0, np.floor(left + 0.5).astype('int32'))
+                bottom = min(image.size[1], np.floor(bottom + 0.5).astype('int32'))
+                right = min(image.size[0], np.floor(right + 0.5).astype('int32'))
+                print(label, (left, top), (right, bottom))
 
-            cropped_img = image.crop((left, top, right, bottom))
-            cropped_imgs.append(cropped_img)
-            box = top, left, bottom, right
-            predicted_boxes.append(box)
+                # 剪切图片
+                cropped_img = image.crop((left, top, right, bottom))
+                cropped_img =cropped_img.resize((256, 256))
+                cropped_imgs.append(np.asarray(cropped_img))
+
+                box = top, left, bottom, right
+                predicted_boxes.append(box)
 
         return predicted_classes, predicted_boxes, cropped_imgs
 

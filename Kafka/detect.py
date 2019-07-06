@@ -116,9 +116,9 @@ class Spark_Calorie_Calculator():
  
             self.logger.info('Done after ' + str(delta) + ' seconds.')
             self.logger.info('Find'+str(len(pre_classes)) + 'dish(s).')
-            #TODO: 这里的操作需要用map写吗？后续操作：每个切完片的图进一步预测分类和营养成分，将最终画好的图返回客户端，
+
             result = {'user': event['user'],
-                      'start':event['start'],
+                      'start': event['start'],
                       'class': actual,
                       'calories': calories,
                      # 'drawn_img': drawn_img_b,

@@ -15,7 +15,7 @@ class Kafka_producer():
         self.kafkaHost = kafkahost
         self.kafkaPort = kafkaport
         self.kafkatopic = kafkatopic
-        self.producer = KafkaProducer(bootstrap_servers = '{kafka_host}:{kafka_port}'.format(
+        self.producer = KafkaProducer(bootstrap_servers='{kafka_host}:{kafka_port}'.format(
             kafka_host=self.kafkaHost,
             kafka_port=self.kafkaPort
         ))
@@ -43,10 +43,10 @@ def image_to_base64(image_path):
 def main():
     producer = Kafka_producer("G4master", 9092, "inputImage")
     for i in range(3):
-        start=timer()
+        start = timer()
         image = image_to_base64("/home/hduser/test_img.jpg")
         result = {
-            'start':start,
+            'start': start,
             'image': image,
             'user': "hduser"
         }

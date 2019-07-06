@@ -5,6 +5,7 @@ import base64
 from io import BytesIO
 from PIL import Image
 import time
+from timeit import default_timer as timer
 
 
 class Kafka_producer():
@@ -42,14 +43,16 @@ def image_to_base64(image_path):
 def main():
     producer = Kafka_producer("G4master", 9092, "inputImage")
     for i in range(3):
+        start=timer()
         image = image_to_base64("/home/hduser/test_img.jpg")
         result = {
+            'start':start,
             'image': image,
             'user': "hduser"
         }
         print(str(i+1), "ok")
         producer.sendjsondata(result)
-        time.sleep(4)
+        time.sleep(3)
 
 
 if __name__ == '__main__':

@@ -25,7 +25,7 @@ class Spark_Calorie_Calculator():
                  topic_to_consume='instream',
                  topic_for_produce='ourstream',
                  kafka_endpoint='127.0.0.1:9092',
-                 model_path='/home/hduser/model.h5'):
+                 model_path='/home/hduser/model_weights/inception.h5'):
         """Initialize Spark & TensorFlow environment."""
         self.topic_to_consume = topic_to_consume
         self.topic_for_produce = topic_for_produce
@@ -124,7 +124,7 @@ class Spark_Calorie_Calculator():
                      # 'drawn_img': drawn_img_b,
                       'process_time': delta
                       }
-
+            
             self.outputResult(json.dumps(result))
 
     def outputResult(self, message):

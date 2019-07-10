@@ -19,9 +19,9 @@ class YOLO(object):
     """YOLO detection model"""
 
     _defaults = {
-        "model_path": '/home/hduser/yolo_weights.h5',
-        "anchors_path": '/home/hduser/Calories/Kafka/yolov3_keras/model/yolo_anchors.txt',
-        "classes_path": '/home/hduser/Calories/Kafka/yolov3_keras/model/coco_classes.txt',
+        "model_path": '/home/hduser/model_weights/yolo_weights.h5',
+        "anchors_path": '/home/hduser/Calories/dataset/yolo_anchors.txt',
+        "classes_path": '/home/hduser/Calories/dataset/coco_classes.txt',
         "score": 0.3,
         "iou": 0.45,
         "model_image_size": (416, 416),

@@ -16,6 +16,7 @@ from kafka import KafkaProducer
 
 # Model imports
 from yolov3_keras.yolo import YOLO
+from inceptionv3 import Inceptionv3
 
 
 class Spark_Calorie_Calculator():
@@ -24,8 +25,7 @@ class Spark_Calorie_Calculator():
     def __init__(self,
                  topic_to_consume='instream',
                  topic_for_produce='ourstream',
-                 kafka_endpoint='127.0.0.1:9092',
-                 model_path='/home/hduser/model.h5'):
+                 kafka_endpoint='127.0.0.1:9092'):
         """Initialize Spark & TensorFlow environment."""
         self.topic_to_consume = topic_to_consume
         self.topic_for_produce = topic_for_produce
@@ -46,9 +46,8 @@ class Spark_Calorie_Calculator():
 
         # Load Network Model & Broadcast to Worker Nodes
         self.model_od = YOLO()
-        self.classifier = keras.models.load_model(model_path)
-        self.classifier._make_predict_function()
-        self.names = ["class0", "class1", "class2"]
+        self.classifier = Inceptionv3()
+
 
     def start_processing(self):
         zookeeper = "G4master:2181,G401:2181,G402:2181,G403:2181,G404:2181,G405:2181,G406:2181,G407:2181," \
@@ -81,21 +80,9 @@ class Spark_Calorie_Calculator():
             image = Image.open(stream)
             start = timer()
 
-            pre_classes, boxes, single_foods = self.model_od.detect_image(image)
+            boxes, single_foods, spoon_box, spoon_img = self.model_od.detect_image(image)
 
-            actual = []
-            for food in single_foods:
-                images = []
-                images.append(food)
-
-                images = np.array(images)
-
-                #print(images.shape)
-                ingredients, actual_class = self.classifier.predict(images)
-                index = np.argmax(actual_class)
-                print('class index:', index)
-                actual.append(index)
-            actual = [self.names[x] for x in actual]
+            actual = self.classifier.eval(single_foods)
 
             # get calories
             calories = []
@@ -112,10 +99,9 @@ class Spark_Calorie_Calculator():
 
             end = timer()
             delta = end - start
-            self.logger.info('Started at ' +str(event['start']) + ' seconds.')
- 
+            self.logger.info('Started at ' + str(event['start']) + ' seconds.')
             self.logger.info('Done after ' + str(delta) + ' seconds.')
-            self.logger.info('Find'+str(len(pre_classes)) + 'dish(s).')
+            self.logger.info('Find'+str(len(boxes)) + 'dish(s).')
 
             result = {'user': event['user'],
                       'start': event['start'],

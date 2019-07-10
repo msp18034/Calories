@@ -123,15 +123,38 @@ class YOLO(object):
 
         print('Found {} boxes for {}'.format(len(out_boxes), 'img'))
 
-        cropped_imgs = []
-        predicted_classes = []
-        predicted_boxes = []
+        cropped_ch_imgs = []
+        predicted_ch_boxes = []
+        cropped_western = []
+        predicted_western_f = []
+        predicted_western_boxes = []
 
         for i, c in reversed(list(enumerate(out_classes))):
             predicted_cls = self.class_names[c]
             # TODO:筛选更多的分类
             if predicted_cls == "bowl":
-                predicted_classes.append(predicted_cls)
+                box = out_boxes[i]
+                score = out_scores[i]
+
+                # 获取每个框的位置
+                label = '{} {:.2f}'.format(predicted_cls, score)
+                top, left, bottom, right = box
+                top = max(0, np.floor(top + 0.5).astype('int32'))
+                left = max(0, np.floor(left + 0.5).astype('int32'))
+                bottom = min(image.size[1], np.floor(bottom + 0.5).astype('int32'))
+                right = min(image.size[0], np.floor(right + 0.5).astype('int32'))
+                print(label, (left, top), (right, bottom))
+
+                # 剪切图片
+                cropped_img = image.crop((left, top, right, bottom))
+                cropped_img = cropped_img.resize((256, 256))
+                cropped_ch_imgs.append(np.asarray(cropped_img))
+
+                box = top, left, bottom, right
+                predicted_ch_boxes.append(box)
+
+            '''可以加入西餐内容
+            if predicted_cls == "sandwich":
                 box = out_boxes[i]
                 score = out_scores[i]
 
@@ -147,12 +170,31 @@ class YOLO(object):
                 # 剪切图片
                 cropped_img = image.crop((left, top, right, bottom))
                 cropped_img =cropped_img.resize((256, 256))
-                cropped_imgs.append(np.asarray(cropped_img))
+                cropped_ch.append(np.asarray(cropped_img))
 
                 box = top, left, bottom, right
-                predicted_boxes.append(box)
+                predicted_ch_boxes.append(box)
+            '''
 
-        return predicted_classes, predicted_boxes, cropped_imgs
+            if predicted_cls == "spoon":
+
+                box = out_boxes[i]
+                # 获取每个框的位置
+                top, left, bottom, right = box
+                top = max(0, np.floor(top + 0.5).astype('int32'))
+                left = max(0, np.floor(left + 0.5).astype('int32'))
+                bottom = min(image.size[1], np.floor(bottom + 0.5).astype('int32'))
+                right = min(image.size[0], np.floor(right + 0.5).astype('int32'))
+                print("spoon", (left, top), (right, bottom))
+
+                # 剪切图片
+                cropped_img = image.crop((left, top, right, bottom))
+                cropped_img = cropped_img.resize((256, 256))
+                cropped_spoon = np.asarray(cropped_img)
+
+                spoon_box = top, left, bottom, right
+
+        return predicted_ch_boxes, cropped_ch_imgs, spoon_box, cropped_spoon
 
     def close_session(self):
         self.sess.close()

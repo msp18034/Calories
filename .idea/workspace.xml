@@ -3,49 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e8346f67-79c7-4c56-87ac-4eacdfe9148d" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1_11.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/1_12.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/1_30.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Kafka/detect.py" beforeDir="false" afterPath="$PROJECT_DIR$/Kafka/detect.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Kafka/inceptionv3.py" beforeDir="false" afterPath="$PROJECT_DIR$/Kafka/inceptionv3.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Kafka/volume.py" beforeDir="false" afterPath="$PROJECT_DIR$/Kafka/volume.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Kafka/yolov3_keras/yolo.py" beforeDir="false" afterPath="$PROJECT_DIR$/Kafka/yolov3_keras/yolo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/conf/yolo_darknet53_voc.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/conf/yolofly_voc.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/convert2pb.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/data/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/log/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/model/BaseNet.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/model/DarkNet53.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/model/LoadWeight.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/model/YOLOFLY.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/model/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/model/custom_loss.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/network.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/predict.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/run_convert.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/run_evaluate.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/run_prepare.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/run_train.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/train_yolo.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/util/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/util/augment.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/util/best_saver.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/util/checkpoint_saver_listener.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/util/early_stop.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/util/evaluator.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/util/gen_anchors.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/util/image.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/util/make_tfrecord_parallel.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/util/summary_save.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/util/tools.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/util/utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YOLOv3/util/voc_eval.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/d30.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/172FoodList.txt" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/172FoodList.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/outfile.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/r.jpg" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -58,8 +16,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Kafka/inceptionv3.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="307">
-              <caret line="47" column="30" selection-start-line="47" selection-start-column="30" selection-end-line="47" selection-end-column="30" />
+            <state relative-caret-position="-170">
+              <caret line="8" column="23" lean-forward="true" selection-start-line="8" selection-start-column="23" selection-end-line="8" selection-end-column="23" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -70,8 +28,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Kafka/volume.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="192">
-              <caret line="37" column="12" selection-start-line="37" selection-start-column="12" selection-end-line="37" selection-end-column="12" />
+            <state relative-caret-position="277">
+              <caret line="38" column="24" lean-forward="true" selection-start-line="38" selection-start-column="24" selection-end-line="38" selection-end-column="24" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -148,11 +106,6 @@
             <path>
               <item name="Calories" type="b2602c69:ProjectViewProjectNode" />
               <item name="Calories" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Calories" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Calories" type="462c0819:PsiDirectoryNode" />
-              <item name="Kafka" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -312,7 +265,14 @@
       <option name="project" value="LOCAL" />
       <updated>1562771320369</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Remove useless files, add volume.py">
+      <created>1562865860556</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1562865860556</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -388,7 +348,8 @@
     <MESSAGE value="add classification model, modify server" />
     <MESSAGE value="add yolov3_tf" />
     <MESSAGE value="Modularization of classification" />
-    <option name="LAST_COMMIT_MESSAGE" value="Modularization of classification" />
+    <MESSAGE value="Remove useless files, add volume.py" />
+    <option name="LAST_COMMIT_MESSAGE" value="Remove useless files, add volume.py" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -694,8 +655,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Kafka/inceptionv3.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="307">
-          <caret line="47" column="30" selection-start-line="47" selection-start-column="30" selection-end-line="47" selection-end-column="30" />
+        <state relative-caret-position="-170">
+          <caret line="8" column="23" lean-forward="true" selection-start-line="8" selection-start-column="23" selection-end-line="8" selection-end-column="23" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -704,8 +665,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Kafka/volume.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="37" column="12" selection-start-line="37" selection-start-column="12" selection-end-line="37" selection-end-column="12" />
+        <state relative-caret-position="277">
+          <caret line="38" column="24" lean-forward="true" selection-start-line="38" selection-start-column="24" selection-end-line="38" selection-end-column="24" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>

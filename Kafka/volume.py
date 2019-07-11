@@ -27,18 +27,35 @@ class Volume(object):
         return spoon_pixel/self.spoon_size
 
     def get_type(self, food_classes):
+        """
+        shape type:
+            1: cube (e.g. cake)
+            2: ball (e.g. apple)
+            3: half-ball (e.g. bun)
+            4: cone (e.g. fried rice in the plate)
+            5: fixed-height (e.g. pizza)
+            6: irregular but nearly fixed shape (e.g. banana)
+
+        additional_info:
+            height, for type 5
+            volume per unit area, for type 6
+        """
         return 1
 
     def get_volume(self,food_imgs,food_classes,spoon_img):
         scale = self.get_scale(spoon_img)
-        volume = []
+        volumes = []
         for i in range(len(food_imgs)):
             type = self.get_type(food_classes[i])
             pixel_num = self.get_pixel_num(food_imgs[i])
             size_2d = pixel_num * scale
 
+            volume = size_2d * np.sqrt(size_2d)
 
-        return volume
+            volumes.append(volume)
+
+
+        return volumes
 
 
 
@@ -51,4 +68,4 @@ if __name__ == '__main__':
     spoon_img = ''
     food_imgs = []
     food_classes = []
-    volumes = v.get_volume(food_imgs, food_classes, spoon_img)
+    result = v.get_volume(food_imgs, food_classes, spoon_img)

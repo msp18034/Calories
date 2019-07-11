@@ -35,7 +35,7 @@ class Inceptionv3(object):
         np.random.seed(None)  # Reset seed to default.
 
     def eval(self, single_foods):
-        actual = []
+        result = []
         for food in single_foods:
             images = []
             images.append(food)
@@ -43,6 +43,6 @@ class Inceptionv3(object):
             ingredients, actual_class = self.model.predict(images)
             index = np.argmax(actual_class)
             print('class index:', index)
-            actual.append(index)
-        actual = [self.class_names[x] for x in actual]
-        return actual
+            result.append(index)
+        classes = [self.class_names[x] for x in result]
+        return result, classes

@@ -27,7 +27,7 @@ Roast chicken wings
 boiled sliced chicken
 Stewed chicken with mushroom
 deep fried chicken wings
-Steamed Chicken with Chili Sauce;
+Steamed Chicken with Chili Sauce
 Shredded chicken
 Stewed Chicken with Three Cups Sauce
 fried chicken drumsticks
@@ -40,18 +40,18 @@ Steamed fish
 Fried and stewed hairtail in soy sauce
 steamed egg custard
 Poached egg
-Tea eggs;
+Tea eggs
 Scrambled egg with tomato
 Scrambled Egg with Leek
 Scrambled Egg with green pepper
 Fried egg
 Shredded preserved egg
 Scrambled Egg with loofah
-Sweet and sour spareribs;
+Sweet and sour spareribs
 Stired Mushrooms & vegetables
 Spare ribs with garlic
-Spicy shrump 
-Deep fried shrump 
+Spicy shrimp 
+Deep fried shrimp 
 Braised beef with brown sauce
 Beef curry
 Braised Beef with Potatoes
@@ -109,10 +109,10 @@ Four-Joy Meatballs
 Griddle cooked duck head
 Yam with Blueberry sauce
 Qishan Noodles
-Giddle cooked bullfrog
+Griddle cooked bullfrog
 Salt Green Tender
 Cold green soyabean 
-Steamed Baby Cabbage with galic & vermicelli
+Steamed Baby Cabbage with garlic & vermicelli
 Beef Seasoned with Soy Sauce 
 Deep fried Spring Rolls
 Pork Ribs and White Gourd Soup
@@ -135,7 +135,7 @@ Hot and dry noodle
 Liuzhou river snails rice noodle
 Cold Rice Noodles
 Lanzhou hand-pulled noodles
-Pita Bread Soaked in Lamb Soup;
+Pita Bread Soaked in Lamb Soup
 Sizzling tofu
 Sizzling Squid 
 Chinese hamburger
@@ -153,7 +153,7 @@ Spicy crayfish
 Mango glutinous rice
 Tom yum kung 
 Coconut Cake
-Fried Rice with pineaple 
+Fried Rice with pineapple 
 Laver-wrapped rice
 Chicken Feet with black bean sauce
 Steamed Glutinous Rice Stuffed with Chicken 
@@ -161,7 +161,7 @@ Sautéed Bullfrog with Pickled Peppers
 Pork Lungs in Chili Sauce
 Spicy pot
 Sautéed shredded Pork with garlic sprout
-Black chicken soup
+Black chicken soup 
 Roasted suckling pig
 Minced Pork Congee with Preserved Egg
 Steamed twisted roll
@@ -169,4 +169,4 @@ Corn salad
 Spaghetti Bolognese
 Sautéed bitter gourd
 Braised Pork with Vermicelli
-Rice
+Rice 

@@ -82,16 +82,16 @@ class Spark_Calorie_Calculator():
 
             boxes, single_foods, spoon_box, spoon_img = self.model_od.detect_image(image)
 
-            actual = self.classifier.eval(single_foods)
+            indices, classes = self.classifier.eval(single_foods)
 
             # get calories
             calories = []
-            for dish in actual:
+            for dish in classes:
                 #    _,=self.classifier.predict(
                 calorie = randint(100, 500)
                 calories.append(calorie)
 
-            drawn_img = self.drawboxes(image, boxes, actual, calories)
+            drawn_img = self.drawboxes(image, boxes, indices, classes, calories)
             img_out_buffer = BytesIO()
             drawn_img.save(img_out_buffer, format='png')
             byte_data = img_out_buffer.getvalue()
@@ -105,7 +105,7 @@ class Spark_Calorie_Calculator():
 
             result = {'user': event['user'],
                       'start': event['start'],
-                      'class': actual,
+                      'class': classes,
                       'calories': calories,
                      # 'drawn_img': drawn_img_b,
                       'process_time': delta
@@ -118,10 +118,9 @@ class Spark_Calorie_Calculator():
         self.producer.send(self.topic_for_produce, message.encode('utf-8'))
         self.producer.flush()
 
-    def drawboxes(self, image, boxes, final_classes, calories):
+    def drawboxes(self, image, boxes, indices, final_classes, calories):
         font = ImageFont.truetype(font='/home/hduser/Calories/FiraMono-Medium.otf',
                                   size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
-        thickness = (image.size[0] + image.size[1]) // 300
         for i in range(len(boxes)):
             cls = final_classes[i]
             box = boxes[i]
@@ -136,16 +135,17 @@ class Spark_Calorie_Calculator():
             else:
                 text_origin = np.array([left, top + 1])
 
-            #TODO:这里使用的颜色序号有问题！请使用分类模型生成颜色！
+            thickness = 3
             for j in range(thickness):
                 draw.rectangle(
                     [left + j, top + j, right - j, bottom - j],
-                    outline=self.model_od.colors[i])
+                    outline=self.classifier.colors[indices[i]])
             draw.rectangle(
                 [tuple(text_origin), tuple(text_origin + label_size)],
-                fill=self.model_od.colors[i])
+                fill=self.classifier.colors[indices[i]])
             draw.text(text_origin, label, fill=(0, 0, 0), font=font)
             del draw
+
         return image
 
 

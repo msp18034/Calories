@@ -10,7 +10,7 @@ class Inceptionv3(object):
         self.model_path = "/home/hduser/model_weights/inception.h5"
         self.class_name_path = "/home/hduser/Calories/dataset/172FoodList.txt"
         self.class_names = self.read_class_names()
-        self.class_num = len(self.classes)
+        self.class_num = len(self.class_names)
         self.get_color()
         self.model = keras.models.load_model(self.model_path)
         self.model._make_predict_function()

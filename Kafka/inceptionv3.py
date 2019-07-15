@@ -1,6 +1,7 @@
 import numpy as np
 import colorsys
 import keras
+from keras.models import load_model, model_from_json
 
 
 # TODO: 代码模块化
@@ -12,8 +13,25 @@ class Inceptionv3(object):
         self.class_names = self.read_class_names()
         self.class_num = len(self.class_names)
         self.get_color()
-        self.model = keras.models.load_model(self.model_path)
-        self.model._make_predict_function()
+        model = load_model(self.model_path)
+        self.model_dic = self.serialize_keras_model(model)
+
+    def deserialize_keras_model(dictionary):
+        """Deserialized the Keras model using the specified dictionary."""
+        architecture = dictionary['model']
+        weights = dictionary['weights']
+        model = model_from_json(architecture)
+        model.set_weights(weights)
+
+        return model
+
+    def serialize_keras_model(model):
+        """Serializes the specified Keras model into a dictionary."""
+        dictionary = {}
+        dictionary['model'] = model.to_json()
+        dictionary['weights'] = model.get_weights()
+
+        return dictionary
 
     def read_class_names(self):
         names = {}
@@ -35,7 +53,9 @@ class Inceptionv3(object):
         np.random.seed(None)  # Reset seed to default.
 
     def eval(self, single_foods):
+        model = self.deserialize_keras_model(self.model_dic)
         result = []
+        # TODO:一起预测多张图
         for food in single_foods:
             images = []
             images.append(food)

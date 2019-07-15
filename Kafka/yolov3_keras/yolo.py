@@ -7,7 +7,7 @@ import colorsys
 
 import numpy as np
 from keras import backend as K
-from keras.models import load_model
+from keras.models import load_model, model_from_json
 from keras.layers import Input
 
 from yolov3_keras.model import yolo_eval, yolo_body, tiny_yolo_body
@@ -66,14 +66,14 @@ class YOLO(object):
         num_classes = len(self.class_names)
         is_tiny_version = num_anchors == 6  # default setting
         try:
-            self.yolo_model = load_model(model_path, compile=False)
+            yolo_model = load_model(model_path, compile=False)
         except:
-            self.yolo_model = tiny_yolo_body(Input(shape=(None, None, 3)), num_anchors // 2, num_classes) \
+            yolo_model = tiny_yolo_body(Input(shape=(None, None, 3)), num_anchors // 2, num_classes) \
                 if is_tiny_version else yolo_body(Input(shape=(None, None, 3)), num_anchors // 3, num_classes)
-            self.yolo_model.load_weights(self.model_path)  # make sure model, anchors and classes match
+            yolo_model.load_weights(self.model_path)  # make sure model, anchors and classes match
         else:
-            assert self.yolo_model.layers[-1].output_shape[-1] == \
-                   num_anchors / len(self.yolo_model.output) * (num_classes + 5), \
+            assert yolo_model.layers[-1].output_shape[-1] == \
+                   num_anchors / len(yolo_model.output) * (num_classes + 5), \
                 'Mismatch between model and given anchor and class sizes'
 
         print('{} model, anchors, and classes loaded.'.format(model_path))
@@ -82,12 +82,31 @@ class YOLO(object):
         self.input_image_shape = K.placeholder(shape=(2,))
         '''if self.gpu_num>=2:
             self.yolo_model = multi_gpu_model(self.yolo_model, gpus=self.gpu_num)'''
-        boxes, scores, classes = yolo_eval(self.yolo_model.output, self.anchors,
+        boxes, scores, classes = yolo_eval(yolo_model.output, self.anchors,
                                            len(self.class_names), self.input_image_shape,
                                            score_threshold=self.score, iou_threshold=self.iou)
+        self.model_dic = self.serialize_keras_model(yolo_model)
         return boxes, scores, classes
 
+    def deserialize_keras_model(self, dictionary):
+        """Deserialized the Keras model using the specified dictionary."""
+        architecture = dictionary['model']
+        weights = dictionary['weights']
+        model = model_from_json(architecture)
+        model.set_weights(weights)
+
+        return model
+
+    def serialize_keras_model(self, model):
+        """Serializes the specified Keras model into a dictionary."""
+        dictionary = {}
+        dictionary['model'] = model.to_json()
+        dictionary['weights'] = model.get_weights()
+
+        return dictionary
+
     def detect_image(self, image):
+        yolo_model = self.deserialize_keras_model(self.model_dic)
         if self.model_image_size != (None, None):
             assert self.model_image_size[0] % 32 == 0, 'Multiples of 32 required'
             assert self.model_image_size[1] % 32 == 0, 'Multiples of 32 required'
@@ -105,7 +124,7 @@ class YOLO(object):
         out_boxes, out_scores, out_classes = self.sess.run(
             [self.boxes, self.scores, self.classes],
             feed_dict={
-                self.yolo_model.input: image_data,
+                yolo_model.input: image_data,
                 self.input_image_shape: [image.size[1], image.size[0]],
                 # K.learning_phase(): 0
             })

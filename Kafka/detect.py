@@ -83,37 +83,41 @@ class Spark_Calorie_Calculator():
                          '\033[0m')  # End color
         start = timer()
         for record in records:
-            self.processImage(record)
+            self.processImage(start, record)
     def test(self,x):
         return x
-    def processImage(self,image):
-        boxes, single_foods, spoon_box, spoon_img = self.model_od.detect_image(image)
+    def processImage(self,start,image):
+        #boxes, single_foods, spoon_box, spoon_img = self.model_od.detect_image(image)
 
-        indices, classes = self.classifier.eval(single_foods)
+        indices, classes = self.classifier.eval(image)
 
         calories = []
         for dish in classes:
             calorie = randint(100, 500)
             calories.append(calorie)
 
-        drawn_img = self.drawboxes(image, boxes, indices, classes, calories)
-        img_out_buffer = BytesIO()
-        drawn_img.save(img_out_buffer, format='png')
-        byte_data = img_out_buffer.getvalue()
-        drawn_img_b = base64.b64encode(byte_data).decode('utf-8')
+        #drawn_img = self.drawboxes(image, boxes, indices, classes, calories)
+        #img_out_buffer = BytesIO()
+        #drawn_img.save(img_out_buffer, format='png')
+        #byte_data = img_out_buffer.getvalue()
+        #drawn_img_b = base64.b64encode(byte_data).decode('utf-8')
 
         end = timer()
-        delta = start-event['start']
-        self.logger.info('Started at ' + str(event['start']) + ' seconds.')
-        self.logger.info('Done after ' + str(delta) + ' seconds.')
-        self.logger.info('Find'+str(len(boxes)) + 'dish(s).')
-
+        #delta = start-event['start']
+        #self.logger.info('Started at ' + str(event['start']) + ' seconds.')
+        #self.logger.info('Done after ' + str(delta) + ' seconds.')
+        #self.logger.info('Find'+str(len(boxes)) + 'dish(s).')
+        '''
         result = {'user': event['user'],
                   'start': event['start'],
                   'class': classes,
                   'calories': calories,
                   # 'drawn_img': drawn_img_b,
                   'process_time': delta
+                  }
+                  '''
+        result = {'user': 'test',
+                  'process_time': end-start
                   }
 
         self.outputResult(json.dumps(result))

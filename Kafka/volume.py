@@ -4,7 +4,7 @@ from PIL import Image
 import math
 
 
-class NutritionCalculator(object):
+class NutritionCalculator:
 
     def __init__(self):
         self.spoon_size = 20  # cm2

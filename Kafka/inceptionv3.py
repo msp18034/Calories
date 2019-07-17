@@ -2,9 +2,10 @@ import numpy as np
 import colorsys
 import keras
 from keras.models import load_model, model_from_json
+import cv2
 
 
-class Inceptionv3(object):
+class Inceptionv3:
 
     def __init__(self):
         self.model_path = "/home/hduser/model_weights/inception.h5"
@@ -56,10 +57,14 @@ class Inceptionv3(object):
         result = []
         # TODO:一起预测多张图
         for food in single_foods:
-            images = []
-            images.append(food)
-            images = np.array(images)
-            ingredients, actual_class = self.model.predict(images)
+            food = cv2.cvtColor(np.asarray(food), cv2.COLOR_RGB2BGR)
+            image = cv2.resize(food, (256, 256),
+                           interpolation=cv2.INTER_CUBIC)
+            image = np.array(image, dtype='float32')
+            image /= 255.
+            image = np.expand_dims(image, axis=0)
+
+            ingredients, actual_class = self.model.predict(image)
             index = np.argmax(actual_class)
             print('class index:', index)
             result.append(index)

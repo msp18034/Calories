@@ -4,7 +4,6 @@ import keras
 from keras.models import load_model, model_from_json
 
 
-# TODO: 代码模块化
 class Inceptionv3(object):
 
     def __init__(self):
@@ -16,7 +15,7 @@ class Inceptionv3(object):
         model = load_model(self.model_path)
         self.model_dic = self.serialize_keras_model(model)
 
-    def deserialize_keras_model(dictionary):
+    def deserialize_keras_model(self, dictionary):
         """Deserialized the Keras model using the specified dictionary."""
         architecture = dictionary['model']
         weights = dictionary['weights']
@@ -25,7 +24,7 @@ class Inceptionv3(object):
 
         return model
 
-    def serialize_keras_model(model):
+    def serialize_keras_model(self, model):
         """Serializes the specified Keras model into a dictionary."""
         dictionary = {}
         dictionary['model'] = model.to_json()
@@ -66,3 +65,4 @@ class Inceptionv3(object):
             result.append(index)
         classes = [self.class_names[x] for x in result]
         return result, classes
+

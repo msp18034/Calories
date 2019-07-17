@@ -18,9 +18,6 @@ from kafka import KafkaProducer
 from yolov3_keras.yolo import YOLO
 from inceptionv3 import Inceptionv3
 
-model_od = YOLO()
-classifier = Inceptionv3()
-
 
 class Spark_Calorie_Calculator():
     """Stream Food Images to Kafka Endpoint."""
@@ -48,8 +45,8 @@ class Spark_Calorie_Calculator():
         self.logger = log4jLogger.LogManager.getLogger(__name__)
 
         # Load Network Model & Broadcast to Worker Nodes
-        #self.model_od = YOLO()
-        #self.classifier = Inceptionv3()
+        self.model_od = YOLO()
+        self.classifier = Inceptionv3()
 
 
     def start_processing(self):
@@ -58,13 +55,7 @@ class Spark_Calorie_Calculator():
         groupid = "test-consumer-group"
 
         """Start consuming from Kafka endpoint and detect objects."""
-        # kvs = KafkaUtils.createDirectStream(self.ssc,["inputImage"],{"bootstrap.servers":self.kafka_endpoint})
         kvs = KafkaUtils.createStream(self.ssc, zookeeper, groupid, self.topic_to_consume)
-        kvs=kvs.map(lambda x:json.loads(x[1]))
-        kvs=kvs.map(lambda event:base64.b64decode(event['image']))
-        kvs=kvs.map(lambda image: BytesIO(image))
-        kvs=kvs.map(lambda image: Image.open(image))
-        # kvs=kvs.map(lambda x: classifier.eval(x))
 
         kvs.foreachRDD(self.handler)
         self.ssc.start()
@@ -73,8 +64,7 @@ class Spark_Calorie_Calculator():
 
     def handler(self, timestamp, message):
         """Collect messages, detect object and send to kafka endpoint."""
-        kvs=message.map(lambda x: classifier.eval(x))
-        records =kvs.collect()
+        records = message.collect()
         # For performance reasons, we only want to process the newest message
         self.logger.info('\033[3' + str(randint(1, 7)) + ';1m' +  # Color
                          '-' * 25 +
@@ -82,42 +72,47 @@ class Spark_Calorie_Calculator():
                          + '-' * 25 +
                          '\033[0m')  # End color
         start = timer()
+
         for record in records:
-            self.processImage(record)
-    def test(self,x):
-        return x
-    def processImage(self,image):
-        boxes, single_foods, spoon_box, spoon_img = self.model_od.detect_image(image)
 
-        indices, classes = self.classifier.eval(single_foods)
+            event = json.loads(record[1])
+            self.logger.info('Received Message from:' + event['user'])
+            decoded = base64.b64decode(event['image'])
+            stream = BytesIO(decoded)
+            image = Image.open(stream)
 
-        calories = []
-        for dish in classes:
-            calorie = randint(100, 500)
-            calories.append(calorie)
+            boxes, single_foods, spoon_box, spoon_img = self.model_od.detect_image(image)
 
-        drawn_img = self.drawboxes(image, boxes, indices, classes, calories)
-        img_out_buffer = BytesIO()
-        drawn_img.save(img_out_buffer, format='png')
-        byte_data = img_out_buffer.getvalue()
-        drawn_img_b = base64.b64encode(byte_data).decode('utf-8')
+            indices, classes = self.classifier.eval(single_foods)
 
-        end = timer()
-        delta = start-event['start']
-        self.logger.info('Started at ' + str(event['start']) + ' seconds.')
-        self.logger.info('Done after ' + str(delta) + ' seconds.')
-        self.logger.info('Find'+str(len(boxes)) + 'dish(s).')
+            # get calories
+            calories = []
+            for dish in classes:
+                #    _,=self.classifier.predict(
+                calorie = randint(100, 500)
+                calories.append(calorie)
 
-        result = {'user': event['user'],
-                  'start': event['start'],
-                  'class': classes,
-                  'calories': calories,
-                  # 'drawn_img': drawn_img_b,
-                  'process_time': delta
-                  }
+            drawn_img = self.drawboxes(image, boxes, indices, classes, calories)
+            img_out_buffer = BytesIO()
+            drawn_img.save(img_out_buffer, format='png')
+            byte_data = img_out_buffer.getvalue()
+            drawn_img_b = base64.b64encode(byte_data).decode('utf-8')
 
-        self.outputResult(json.dumps(result))
-        return 1
+            end = timer()
+            delta = start-event['start']
+            self.logger.info('Started at ' + str(event['start']) + ' seconds.')
+            self.logger.info('Done after ' + str(delta) + ' seconds.')
+            self.logger.info('Find'+str(len(boxes)) + 'dish(s).')
+
+            result = {'user': event['user'],
+                      'start': event['start'],
+                      'class': classes,
+                      'calories': calories,
+                      # 'drawn_img': drawn_img_b,
+                      'process_time': delta
+                      }
+
+            self.outputResult(json.dumps(result))
 
     def outputResult(self, message):
         self.logger.info("Now sending out....")

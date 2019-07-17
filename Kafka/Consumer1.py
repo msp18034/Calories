@@ -23,35 +23,34 @@ class Kafka_consumer():
     def consume_data(self):
         try:
             for message in self.consumer:
-                res=json.loads(message.value)
-                end=timer()
+                res = json.loads(message.value)
+                end = timer()
                 #print(res.keys())
+
                 print(res['class'])
-                print("Total time",str(end-res['start']))
+                print( " Receive time: ", res['process_time'])
+                print("Total time", str(end-res['start']))
                 #yield message
         except KeyboardInterrupt:
             print("KeyboardInterrupt")
 
 
 def main():
-    '''
-    测试consumer和producer
-    :return:
-    '''
+
     ##测试生产模块
     #producer = Kafka_producer("127.0.0.1", 9092, "ranktest")
     #for id in range(10):
     #    params = '{abetst}:{null}---'+str(i)
     #    producer.sendjsondata(params)
     ##测试消费模块
-    #消费模块的返回格式为ConsumerRecord(topic=u'ranktest', partition=0, offset=202, timestamp=None, 
-    #\timestamp_type=None, key=None, value='"{abetst}:{null}---0"', checksum=-1868164195, 
+    #消费模块的返回格式为ConsumerRecord(topic=u'ranktest', partition=0, offset=
+    #\timestamp_type=None, key=None, value='"{abetst}:{null}---0"', checksum=-1
     #\serialized_key_size=-1, serialized_value_size=21)
-    consumer = Kafka_consumer('G4master', 9092, "outputResult", 'test-python-ranktest')
+    consumer = Kafka_consumer('G401', 9092, "outputResult", 'test-python-rankte')
     message = consumer.consume_data()
     for i in message:
         print(i)
-        
+
 
 if __name__ == '__main__':
     main()

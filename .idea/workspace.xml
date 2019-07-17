@@ -2,12 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e8346f67-79c7-4c56-87ac-4eacdfe9148d" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Kafka/backupdetect.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1_24.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1_25.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/FiraMono-Medium.otf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Kafka/Consumer1.py" beforeDir="false" afterPath="$PROJECT_DIR$/Kafka/Consumer1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Kafka/Producer.py" beforeDir="false" afterPath="$PROJECT_DIR$/Kafka/Producer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Kafka/detect.py" beforeDir="false" afterPath="$PROJECT_DIR$/Kafka/detect.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Kafka/draw.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Kafka/inceptionv3.py" beforeDir="false" afterPath="$PROJECT_DIR$/Kafka/inceptionv3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Kafka/volume.py" beforeDir="false" afterPath="$PROJECT_DIR$/Kafka/volume.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Kafka/yolov3_keras/yolo.py" beforeDir="false" afterPath="$PROJECT_DIR$/Kafka/yolov3_keras/yolo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/nutrition.csv" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/nutrition.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/shape_density.csv" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/shape_density.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/command" beforeDir="false" afterPath="$PROJECT_DIR$/command" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/d24.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/d25.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/detection_result.jpg" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -20,8 +28,20 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Kafka/detect.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="374">
-              <caret line="148" column="20" selection-start-line="120" selection-start-column="4" selection-end-line="148" selection-end-column="20" />
+            <state relative-caret-position="194">
+              <caret line="155" selection-start-line="155" selection-end-line="155" />
+              <folding>
+                <element signature="e#19#56#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Kafka/backupdetect.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2720">
+              <caret line="160" selection-start-line="160" selection-end-line="160" />
               <folding>
                 <element signature="e#18#55#0" expanded="true" />
               </folding>
@@ -30,43 +50,43 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://E:/Anaconda3/Lib/site-packages/pyspark/streaming/kafka.py">
+        <entry file="file://$PROJECT_DIR$/Kafka/inceptionv3.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1445">
-              <caret line="95" column="29" selection-start-line="93" selection-start-column="7" selection-end-line="95" selection-end-column="29" />
+            <state relative-caret-position="1156">
+              <caret line="68" selection-start-line="68" selection-end-line="68" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Kafka/inceptionv3.py">
+        <entry file="file://$PROJECT_DIR$/Kafka/volume.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="140">
-              <caret line="54" column="33" lean-forward="true" selection-start-line="54" selection-start-column="33" selection-end-line="54" selection-end-column="33" />
+            <state relative-caret-position="119">
+              <caret line="7" selection-start-line="7" selection-end-line="7" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/command">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="51">
+              <caret line="3" column="5" selection-start-line="3" selection-start-column="5" selection-end-line="3" selection-end-column="5" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Kafka/volume.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="578">
-              <caret line="34" column="16" lean-forward="true" selection-start-line="34" selection-start-column="16" selection-end-line="34" selection-end-column="16" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Kafka/yolov3_keras/yolo.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1955">
-              <caret line="124" column="52" selection-start-line="124" selection-start-column="52" selection-end-line="124" selection-end-column="52" />
+            <state relative-caret-position="3536">
+              <caret line="208" selection-start-line="208" selection-end-line="208" />
               <folding>
                 <element signature="e#92#107#0" expanded="true" />
               </folding>
@@ -77,7 +97,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Kafka/yolov3_keras/model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2975">
+            <state relative-caret-position="446">
               <caret line="186" column="9" selection-start-line="186" selection-start-column="9" selection-end-line="186" selection-end-column="9" />
               <folding>
                 <element signature="e#39#66#0" expanded="true" />
@@ -145,9 +165,7 @@
         <option value="$PROJECT_DIR$/Kafka/streaming_image.py" />
         <option value="$PROJECT_DIR$/yolov3_keras/utils.py" />
         <option value="$PROJECT_DIR$/yolov3_keras/yolo.py" />
-        <option value="$PROJECT_DIR$/Kafka/Consumer.py" />
         <option value="$PROJECT_DIR$/Kafka/server.py" />
-        <option value="$PROJECT_DIR$/Kafka/Producer.py" />
         <option value="$PROJECT_DIR$/Kafka/draw.py" />
         <option value="$PROJECT_DIR$/Kafka/yolov3_tf/layer_utils.py" />
         <option value="$PROJECT_DIR$/Kafka/yolov3_tf/test_single_image.py" />
@@ -155,12 +173,16 @@
         <option value="$PROJECT_DIR$/Kafka/volume_test.py" />
         <option value="$PROJECT_DIR$/dataset/bohe_data.py" />
         <option value="$PROJECT_DIR$/dataset/172FoodList.txt" />
-        <option value="$PROJECT_DIR$/Kafka/detect.py" />
         <option value="$PROJECT_DIR$/dataset/shape_density.csv" />
+        <option value="$PROJECT_DIR$/Kafka/volume.py" />
+        <option value="$PROJECT_DIR$/command" />
         <option value="$PROJECT_DIR$/Kafka/Consumer1.py" />
+        <option value="$PROJECT_DIR$/Kafka/Consumer.py" />
+        <option value="$PROJECT_DIR$/Kafka/Producer.py" />
+        <option value="$PROJECT_DIR$/Kafka/detect.py" />
+        <option value="$PROJECT_DIR$/Kafka/backupdetect.py" />
         <option value="$PROJECT_DIR$/Kafka/inceptionv3.py" />
         <option value="$PROJECT_DIR$/Kafka/yolov3_keras/yolo.py" />
-        <option value="$PROJECT_DIR$/Kafka/volume.py" />
       </list>
     </option>
   </component>
@@ -214,7 +236,7 @@
   <component name="PropertiesComponent">
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../volume" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -307,6 +329,9 @@
       <module name="Calories" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Kafka" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -440,14 +465,20 @@
       <option name="project" value="LOCAL" />
       <updated>1563030620246</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="optimize volume calculate method">
+      <created>1563202353903</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1563202353905</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.80985916" visible="true" weight="0.28125" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.80985916" visible="true" weight="0.28125" />
       <window_info id="Structure" order="1" sideWeight="0.19014084" side_tool="true" weight="0.4534413" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -460,7 +491,7 @@
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.4028056" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.3289689" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="10" visible="true" weight="0.13256955" />
+      <window_info anchor="bottom" id="Python Console" order="10" visible="true" weight="0.13256955" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -518,7 +549,8 @@
     <MESSAGE value="Modularization of classification" />
     <MESSAGE value="Remove useless files, add volume.py" />
     <MESSAGE value="complete volume and calories part" />
-    <option name="LAST_COMMIT_MESSAGE" value="complete volume and calories part" />
+    <MESSAGE value="optimize volume calculate method" />
+    <option name="LAST_COMMIT_MESSAGE" value="optimize volume calculate method" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -537,20 +569,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Kafka/yolov3_keras/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="237">
-          <caret line="18" column="36" lean-forward="true" selection-start-line="18" selection-start-column="36" selection-end-line="18" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://E:/Anaconda3/Lib/cgi.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2754">
-          <caret line="9" column="18" lean-forward="true" selection-start-line="9" selection-start-column="18" selection-end-line="9" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/.PyCharmCE2019.1/system/python_stubs/-791851423/_io.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="128">
@@ -593,27 +611,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Kafka/Consumer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="173">
-          <caret line="36" column="20" selection-start-line="36" selection-start-column="20" selection-end-line="36" selection-end-column="20" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://E:/Anaconda3/Lib/json/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1873">
           <caret line="174" column="33" selection-start-line="174" selection-start-column="33" selection-end-line="174" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Kafka/draw.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="21" column="16" lean-forward="true" selection-start-line="21" selection-start-column="16" selection-end-line="21" selection-end-column="54" />
         </state>
       </provider>
     </entry>
@@ -746,40 +747,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Kafka/Producer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="45" column="23" lean-forward="true" selection-start-line="45" selection-start-column="23" selection-end-line="45" selection-end-column="23" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dataset/bohe_data.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
           <caret line="9" lean-forward="true" selection-start-line="9" selection-end-line="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Kafka/Consumer1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="25" column="19" selection-start-line="25" selection-start-column="19" selection-end-line="25" selection-end-column="19" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Kafka/detect.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="148" column="20" selection-start-line="120" selection-start-column="4" selection-end-line="148" selection-end-column="20" />
-          <folding>
-            <element signature="e#18#55#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -790,36 +761,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Kafka/yolov3_keras/yolo.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1955">
-          <caret line="124" column="52" selection-start-line="124" selection-start-column="52" selection-end-line="124" selection-end-column="52" />
-          <folding>
-            <element signature="e#92#107#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Kafka/yolov3_keras/model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2975">
-          <caret line="186" column="9" selection-start-line="186" selection-start-column="9" selection-end-line="186" selection-end-column="9" />
-          <folding>
-            <element signature="e#39#66#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dataset/shape_density.csv">
       <provider editor-type-id="csv-table-editor">
         <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
       </provider>
+      <provider selected="true" editor-type-id="csv-text-editor" />
       <provider editor-type-id="text-editor">
         <state relative-caret-position="392">
           <caret line="171" column="12" selection-start-line="171" selection-start-column="12" selection-end-line="171" selection-end-column="12" />
         </state>
       </provider>
-      <provider selected="true" editor-type-id="csv-text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/dataset/UECFOOD256/check_label.py">
       <provider selected="true" editor-type-id="text-editor" />
@@ -831,22 +782,105 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Kafka/inceptionv3.py">
+    <entry file="file://$PROJECT_DIR$/Kafka/volume.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="54" column="33" lean-forward="true" selection-start-line="54" selection-start-column="33" selection-end-line="54" selection-end-column="33" />
+        <state relative-caret-position="119">
+          <caret line="7" selection-start-line="7" selection-end-line="7" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Kafka/volume.py">
+    <entry file="file://$PROJECT_DIR$/Kafka/Consumer1.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="578">
-          <caret line="34" column="16" lean-forward="true" selection-start-line="34" selection-start-column="16" selection-end-line="34" selection-end-column="16" />
+        <state relative-caret-position="544">
+          <caret line="32" column="30" lean-forward="true" selection-start-line="32" selection-start-column="30" selection-end-line="32" selection-end-column="30" />
+          <folding>
+            <element signature="e#1#32#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Kafka/Consumer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#1#32#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Kafka/Producer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1003">
+          <caret line="59" selection-start-line="59" selection-end-line="59" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Kafka/detect.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="194">
+          <caret line="155" selection-start-line="155" selection-end-line="155" />
+          <folding>
+            <element signature="e#19#56#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Kafka/backupdetect.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2720">
+          <caret line="160" selection-start-line="160" selection-end-line="160" />
+          <folding>
+            <element signature="e#18#55#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Kafka/draw.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="27" column="36" lean-forward="true" selection-start-line="27" selection-start-column="36" selection-end-line="27" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/command">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="5" selection-start-line="3" selection-start-column="5" selection-end-line="3" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Kafka/inceptionv3.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1156">
+          <caret line="68" selection-start-line="68" selection-end-line="68" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Kafka/yolov3_keras/model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="446">
+          <caret line="186" column="9" selection-start-line="186" selection-start-column="9" selection-end-line="186" selection-end-column="9" />
+          <folding>
+            <element signature="e#39#66#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Kafka/yolov3_keras/yolo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3536">
+          <caret line="208" selection-start-line="208" selection-end-line="208" />
+          <folding>
+            <element signature="e#92#107#0" expanded="true" />
           </folding>
         </state>
       </provider>

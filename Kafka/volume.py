@@ -8,13 +8,13 @@ class NutritionCalculator:
 
     def __init__(self):
         self.spoon_size = 20  # cm2
-        #self.para_path = '/home/hduser/Calories/dataset/shape_density.csv'
+        self.para_path = '/home/hduser/Calories/dataset/shape_density.csv'
         # [编号，shape_type, 参数, 密度g/ml]
-        self.para_path = '../dataset/shape_density.csv'
+        #self.para_path = '../dataset/shape_density.csv'
         self.para = np.loadtxt(self.para_path, delimiter=',')
-        #self.nutrition_path = '/home/hduser/Calories/dataset/nutrition.csv'
+        self.nutrition_path = '/home/hduser/Calories/dataset/nutrition.csv'
         # [编号，热量，碳水化合物，脂肪，蛋白质，纤维素]
-        self.nutrition_path = '../dataset/nutrition.csv'
+        #self.nutrition_path = '../dataset/nutrition.csv'
         self.nutrition = np.loadtxt(self.nutrition_path, delimiter=',')
 
     def get_pixel_num(self, image):

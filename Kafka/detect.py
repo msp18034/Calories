@@ -83,7 +83,7 @@ class Spark_Calorie_Calculator():
                          '\033[0m')  # End color
         start = timer()
         for record in records:
-            self.processImage(start, record)
+            self.processImage(start,record)
     def test(self,x):
         return x
     def processImage(self,start,image):
@@ -117,6 +117,7 @@ class Spark_Calorie_Calculator():
                   }
                   '''
         result = {'user': 'test',
+                 'classes':classes,
                   'process_time': end-start
                   }
 
@@ -167,3 +168,4 @@ if __name__ == '__main__':
                        "G405:9092,G406:9092,G407:9092,G408:9092,G409:9092,G410:9092,"
                        "G411:9092,G412:9092,G413:9092,G414:9092,G415:9092")
     sod.start_processing()
+

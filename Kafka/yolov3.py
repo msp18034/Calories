@@ -2,6 +2,7 @@ import numpy as np
 from keras.models import load_model, model_from_json
 import cv2
 import time
+from PIL import Image
 
 
 class YOLO:
@@ -16,8 +17,10 @@ class YOLO:
         self._t2 = 0.45  # nms_threshold
         model_path = '/home/hduser/model_weights/yolo.h5'
         #model_path = 'D:/0study/Project/code/YOLOv3-master-xian/data/yolo.h5'
-        model = load_model(model_path)
-        self.model_dic = self.serialize_keras_model(model)
+        #model = load_model(model_path)
+        #self.model_dic = self.serialize_keras_model(model)
+        self.model = load_model(model_path)
+        self.model._make_predict_function()
         classes_path = '/home/hduser/Calories/dataset/coco_classes.txt'
         #classes_path = '../dataset/coco_classes.txt'
         self.class_name = self._get_class(classes_path)
@@ -229,8 +232,11 @@ class YOLO:
             classes: ndarray, classes of objects.
             scores: ndarray, scores of objects.
         """
-        model = self.deserialize_keras_model(self.model_dic)
-        outs = model.predict(image)
+        s = time.time()
+        #model = self.deserialize_keras_model(self.model_dic)
+        e = time.time()
+        print("deserialize model time:", e-s)
+        outs = self.model.predict(image)
         boxes, classes, scores = self._yolo_out(outs, shape)
 
         return boxes, classes, scores
@@ -244,7 +250,6 @@ class YOLO:
         # Returns
             image: ndarray(1, 416, 416, 3), processed image.
         """
-        img = cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)
         image = cv2.resize(img, (416, 416),
                            interpolation=cv2.INTER_CUBIC)
         image = np.array(image, dtype='float32')
@@ -266,8 +271,8 @@ class YOLO:
 
             left = max(0, np.floor(x + 0.5).astype(int))
             top = max(0, np.floor(y + 0.5).astype(int))
-            right = min(image.shape[1], np.floor(x + w + 0.5).astype(int))
-            bottom = min(image.shape[0], np.floor(y + h + 0.5).astype(int))
+            right = min(image.size[0], np.floor(x + w + 0.5).astype(int))
+            bottom = min(image.size[1], np.floor(y + h + 0.5).astype(int))
             box = (left, top, right, bottom)
 
             if self.class_name[cl] == 'bowl':
@@ -275,10 +280,12 @@ class YOLO:
                 cropped_img = cv2.cvtColor(np.asarray(cropped_img), cv2.COLOR_RGB2BGR)
                 food_img.append(cropped_img)
                 bowl_box.append(box)
+                print(self.class_name[cl], box)
             elif self.class_name[cl] == 'spoon':
                 if score > spoon_score:
                     spoon_img = image.crop(box)
                     spoon_score = score
+                    print(self.class_name[cl], box)
         return spoon_img, bowl_box, food_img
 
 
@@ -294,12 +301,22 @@ class YOLO:
         # Returns:
             boxes of foods and spoon
         """
-        pimage = self.process_image(image)
+        # image: PIL Image
+        # img: cv2 image
+        img = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
+        pimage = self.process_image(img)
 
         start = time.time()
-        boxes, classes, scores = self.predict(pimage, image.shape)
+        boxes, classes, scores = self.predict(pimage, img.shape)
         spoon_img, bowl_box, food_img = self.fliter(image, boxes, scores, classes)
         end = time.time()
-        print('Yolo time: {0:.2f}s'.format(end - start))
+        print('Total YOLO time: {0:.2f}s'.format(end - start))
 
         return bowl_box, food_img, spoon_img
+
+if __name__ == "__main__":
+    yolo = YOLO()
+    p = Image.open("../0.jpg")
+    bowl_box, food_img, spoon_img = yolo.detect_food(p)
+
+

@@ -13,8 +13,9 @@ class Inceptionv3:
         self.class_names = self.read_class_names()
         self.class_num = len(self.class_names)
         self.get_color()
-        model = load_model(self.model_path)
-        self.model_dic = self.serialize_keras_model(model)
+        self.model = load_model(self.model_path)
+        self.model._make_predict_function()
+        #self.model_dic = self.serialize_keras_model(model)
 
     def deserialize_keras_model(self, dictionary):
         """Deserialized the Keras model using the specified dictionary."""
@@ -53,7 +54,7 @@ class Inceptionv3:
         np.random.seed(None)  # Reset seed to default.
 
     def eval(self, single_foods):
-        model = self.deserialize_keras_model(self.model_dic)
+        #model = self.deserialize_keras_model(self.model_dic)
         result = []
         # TODO:一起预测多张图
         for food in single_foods:

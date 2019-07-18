@@ -28,6 +28,7 @@ class Kafka_consumer():
                 #print(res.keys())
 
                 print(res['class'])
+                print(res['calories'])
                 print( " Receive time: ", res['process_time'])
                 print("Total time", str(end-res['start']))
                 #yield message

@@ -83,12 +83,13 @@ class Spark_Calorie_Calculator():
             decoded = base64.b64decode(event['image'])
             stream = BytesIO(decoded)
             image = Image.open(stream)
+            self.logger.info('image open! size'+str(image.size))
 
-            boxes, food_imgs, spoon_img = self.model_od.detect_image(image)
-            if spoon_img != 0 & len(boxes) > 0:
+            boxes, food_imgs, spoon_img = self.model_od.detect_food(image)
+            if spoon_img != 0 and len(boxes) > 0:
                 indices, food_classes = self.classifier.eval(food_imgs)
-                result = self.calorie.calculate_nutrition(food_imgs, food_classes, spoon_img)
-                calories = result[:, 0]
+                result = self.calorie.calculate_nutrition(food_imgs, indices, spoon_img)
+                calories = result[:, 0].tolist()
 
                 drawn_img = self.drawboxes(image, boxes, indices, food_classes, calories)
 
@@ -152,7 +153,7 @@ class Spark_Calorie_Calculator():
 
 if __name__ == '__main__':
     sod = Spark_Calorie_Calculator(
-        topic_to_consume="inputImage",
+        topic_to_consume={"inputImage": 0, "inputImage": 1, "inputImage": 2},
         topic_for_produce="outputResult",
         kafka_endpoint="G4master:9092,G401:9092,G402:9092,G403:9092,G404:9092,"
                        "G405:9092,G406:9092,G407:9092,G408:9092,G409:9092,G410:9092,"

@@ -35,11 +35,11 @@ class Spark_Calorie_Calculator():
         self.producer = KafkaProducer(bootstrap_servers=kafka_endpoint)
 
         # Load Spark Context
-        self.sc = SparkContext(appName='MultiFood_detection')
-        self.ssc = StreamingContext(self.sc, 2)  # , 3)
+        sc = SparkContext(appName='MultiFood_detection')
+        self.ssc = StreamingContext(sc, 2)  # , 3)
 
         # Make Spark logging less extensive
-        log4jLogger = self.sc._jvm.org.apache.log4j
+        log4jLogger = sc._jvm.org.apache.log4j
         log_level = log4jLogger.Level.ERROR
         log4jLogger.LogManager.getLogger('org').setLevel(log_level)
         log4jLogger.LogManager.getLogger('akka').setLevel(log_level)
@@ -91,14 +91,12 @@ class Spark_Calorie_Calculator():
                 indices, food_classes = self.classifier.eval(food_imgs)
                 self.logger.info('classification complete! time:'+str(timer()-start_c))
                 start_v = timer()
-                scale = self.calorie.get_scale(spoon_img)
-                img_ind = list(zip(food_imgs, indices))
-                img_ind = self.sc.parallelize(img_ind)
-                result = img_ind.map(lambda x: self.calorie.calculate_nutrition(scale, x))
-                result.collect()
+                result = self.calorie.calculate_nutrition(food_imgs, indices, spoon_img)
                 calories = result[:, 0].tolist()
                 self.logger.info('volume complete! time:'+ str(timer()-start_v))
+                start_d = timer()
                 drawn_img = self.drawboxes(image, boxes, indices, food_classes, calories)
+                self.logger.info('draw complete! time:' + str(timer()-start_d))
 
             else:
                 food_classes = ['Not Found']

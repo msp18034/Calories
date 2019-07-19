@@ -277,7 +277,7 @@ class YOLO:
 
             if self.class_name[cl] == 'bowl':
                 cropped_img = image.crop(box)
-                cropped_img = cv2.cvtColor(np.asarray(cropped_img), cv2.COLOR_RGB2BGR)
+                #cropped_img = cv2.cvtColor(np.asarray(cropped_img), cv2.COLOR_RGB2BGR)
                 food_img.append(cropped_img)
                 bowl_box.append(box)
                 print(self.class_name[cl], box)

@@ -52,7 +52,7 @@ def main():
         }
         print(str(i+1), "ok")
         producer.sendjsondata(result)
-        time.sleep(0.3)
+        time.sleep(5)
 
 
 if __name__ == '__main__':

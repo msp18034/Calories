@@ -37,8 +37,8 @@ class NutritionCalculator:
             pix.append(self.get_pixel_num(spoon_img))
         return self.spoon_size/np.median(pix)
 
-    def get_volume(self, food_imgs, food_classes, spoon_img):
-        scale = self.get_scale(spoon_img)
+    def get_volume(self, scale, food_imgs, food_classes):
+        #scale = self.get_scale(spoon_img)
         volumes = []
         for i in range(len(food_imgs)):
             para = self.para[food_classes[i]]
@@ -60,11 +60,9 @@ class NutritionCalculator:
             volumes.append(v)
         return volumes
 
-    def calculate_nutrition(self, food_imgs, food_classes, spoon_img):
-        if not spoon_img:
-            return [0]
-        if len(food_classes) > 0:
-            volumes = self.get_volume(food_imgs, food_classes, spoon_img)
+    def calculate_nutrition(self, scale, img_idx):
+        food_imgs, food_classes = img_idx
+        volumes = self.get_volume(scale, food_imgs, food_classes)
         results = []
         for i in range(len(food_classes)):
             n = volumes[i] / self.para[food_classes[i]][3] / 100 * self.nutrition[food_classes[i]][1:]

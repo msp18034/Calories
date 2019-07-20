@@ -5,6 +5,7 @@ import json
 import numpy as np
 from timeit import default_timer as timer
 from PIL import Image, ImageDraw, ImageFont
+import cv2
 from random import randint
 from io import BytesIO
 import keras
@@ -13,13 +14,11 @@ from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
 from kafka import KafkaProducer
-
+from keras.models import load_model, model_from_json
 # Model imports
-from yolov3_keras.yolo import YOLO
+from yolov3 import YOLO
 from inceptionv3 import Inceptionv3
-
-model_od = YOLO()
-classifier = Inceptionv3()
+from volume import NutritionCalculator
 
 
 class Spark_Calorie_Calculator():
@@ -48,9 +47,13 @@ class Spark_Calorie_Calculator():
         self.logger = log4jLogger.LogManager.getLogger(__name__)
 
         # Load Network Model & Broadcast to Worker Nodes
-        #self.model_od = YOLO()
-        #self.classifier = Inceptionv3()
-
+        self.model_od = YOLO()
+        self.classifier = Inceptionv3()
+        self.calorie = NutritionCalculator()
+        model=load_model("/home/hduser/model_weights/cusine.h5")
+        print("loaded model")
+        bdmodel=sc.broadcast(model)
+        print("broadcasted")
 
     def start_processing(self):
         zookeeper = "G4master:2181,G401:2181,G402:2181,G403:2181,G404:2181,G405:2181,G406:2181,G407:2181," \
@@ -58,13 +61,7 @@ class Spark_Calorie_Calculator():
         groupid = "test-consumer-group"
 
         """Start consuming from Kafka endpoint and detect objects."""
-        # kvs = KafkaUtils.createDirectStream(self.ssc,["inputImage"],{"bootstrap.servers":self.kafka_endpoint})
         kvs = KafkaUtils.createStream(self.ssc, zookeeper, groupid, self.topic_to_consume)
-        kvs=kvs.map(lambda x:json.loads(x[1]))
-        kvs=kvs.map(lambda event:base64.b64decode(event['image']))
-        kvs=kvs.map(lambda image: BytesIO(image))
-        kvs=kvs.map(lambda image: Image.open(image))
-        # kvs=kvs.map(lambda x: classifier.eval(x))
 
         kvs.foreachRDD(self.handler)
         self.ssc.start()
@@ -73,8 +70,7 @@ class Spark_Calorie_Calculator():
 
     def handler(self, timestamp, message):
         """Collect messages, detect object and send to kafka endpoint."""
-        kvs=message.map(lambda x: classifier.eval(x))
-        records =kvs.collect()
+        records = message.collect()
         # For performance reasons, we only want to process the newest message
         self.logger.info('\033[3' + str(randint(1, 7)) + ';1m' +  # Color
                          '-' * 25 +
@@ -82,47 +78,81 @@ class Spark_Calorie_Calculator():
                          + '-' * 25 +
                          '\033[0m')  # End color
         start = timer()
-        for record in records:
-            self.processImage(start,record)
-    def test(self,x):
-        return x
-    def processImage(self,start,image):
-        #boxes, single_foods, spoon_box, spoon_img = self.model_od.detect_image(image)
+        #or record in records:
+        def eval(record):
+            event = json.loads(record[1])
+            decoded = base64.b64decode(event['image'])
+            stream = BytesIO(decoded)
+            image = Image.open(stream)
+            food = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
+            image = cv2.resize(food, (256, 256),
+            interpolation=cv2.INTER_CUBIC)
+            image = np.array(image, dtype='float32')
+            image /= 255.
+            image = np.expand_dims(image, axis=0)
 
-        indices, classes = self.classifier.eval(image)
+            #ingredients, actual_class = self.model.predict(image)
+            ingredients, actual_class =bdmodel.value.predict(image)
+            #index = np.argmax(actual_class)
+            print('class index:', index)                                                                         #classes = [self.class_names[x] for x in result]
+            return image
+        
+        def loadImage(record):
+            event = json.loads(record[1])
+            decoded = base64.b64decode(event['image'])
+            #self.logger.info('Received Message from:' + event['user'])
+            #decoded = base64.b64decode(event['image'])
+            stream = BytesIO(decoded)
+            image = Image.open(stream)
+            #self.logger.info('image open! size'+str(image.size))
+            #index,classname=eval(food_imgs) 
+            return 1
+        def oreturn(x):
+            return 1
+        result=message.map(lambda x: eval(x))
+        print("------------------finished map--------------------------")
+        print(result.count())
 
-        calories = []
-        for dish in classes:
-            calorie = randint(100, 500)
-            calories.append(calorie)
+        def something():
 
-        #drawn_img = self.drawboxes(image, boxes, indices, classes, calories)
-        #img_out_buffer = BytesIO()
-        #drawn_img.save(img_out_buffer, format='png')
-        #byte_data = img_out_buffer.getvalue()
-        #drawn_img_b = base64.b64encode(byte_data).decode('utf-8')
+            boxes, food_imgs, spoon_img = self.model_od.detect_food(image)
+            if spoon_img != 0 and len(boxes) > 0:
+                start_c = timer()
+                indices, food_classes = self.classifier.eval(food_imgs)
+                self.logger.info('classification complete! time:'+str(timer()-start_c))
+                start_v = timer()
+                result = self.calorie.calculate_nutrition(food_imgs, indices, spoon_img)
+                calories = result[:, 0].tolist()
+                self.logger.info('volume complete! time:'+ str(timer()-start_v))
+                start_d = timer()
+                drawn_img = self.drawboxes(image, boxes, indices, food_classes, calories)
+                self.logger.info('draw complete! time:' + str(timer()-start_d))
 
-        end = timer()
-        #delta = start-event['start']
-        #self.logger.info('Started at ' + str(event['start']) + ' seconds.')
-        #self.logger.info('Done after ' + str(delta) + ' seconds.')
-        #self.logger.info('Find'+str(len(boxes)) + 'dish(s).')
-        '''
-        result = {'user': event['user'],
-                  'start': event['start'],
-                  'class': classes,
-                  'calories': calories,
-                  # 'drawn_img': drawn_img_b,
-                  'process_time': delta
-                  }
-                  '''
-        result = {'user': 'test',
-                 'classes':classes,
-                  'process_time': end-start
-                  }
+            else:
+                food_classes = ['Not Found']
+                calories = [0]
+                drawn_img = image
 
-        self.outputResult(json.dumps(result))
-        return 1
+            img_out_buffer = BytesIO()
+            drawn_img.save(img_out_buffer, format='png')
+            byte_data = img_out_buffer.getvalue()
+            drawn_img_b = base64.b64encode(byte_data).decode('utf-8')
+
+            end = timer()
+            delta = start-event['start']
+            self.logger.info('Started at ' + str(event['start']) + ' seconds.')
+            self.logger.info('Done after ' + str(delta) + ' seconds.')
+            self.logger.info('Find'+str(len(boxes)) + 'dish(s).')
+
+            result = {'user': event['user'],
+                      'start': event['start'],
+                      'class': food_classes,
+                      'calories': calories,
+                      # 'drawn_img': drawn_img_b,
+                      'process_time': delta
+                      }
+
+            self.outputResult(json.dumps(result))
 
     def outputResult(self, message):
         self.logger.info("Now sending out....")
@@ -130,32 +160,28 @@ class Spark_Calorie_Calculator():
         self.producer.flush()
 
     def drawboxes(self, image, boxes, indices, final_classes, calories):
-        font = ImageFont.truetype(font='/home/hduser/Calories/FiraMono-Medium.otf',
-                                  size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
+        img = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
+        tl = 5  # line thickness
+
         for i in range(len(boxes)):
             cls = final_classes[i]
             box = boxes[i]
             cal = calories[i]
-            label = '{} {}cal'.format(cls, cal)
-            draw = ImageDraw.Draw(image)
-            label_size = draw.textsize(label, font)
+            label = '{} {}cal'.format(cls, int(cal))
+            color = self.classifier.colors[indices[i]]
+            c1, c2 = (int(box[0]), int(box[1])), (int(box[2]), int(box[3]))
+            cv2.rectangle(img, c1, c2, color, thickness=tl)
+            # label
+            tf = 1  # font thickness
+            t_size = cv2.getTextSize(label, 0, fontScale=float(tl) / 8, thickness=tf)[0]
+            if box[1] - t_size[1] < 0:
+                c1 = c1[0], c1[1] + t_size[1]
+            c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
+            cv2.rectangle(img, c1, c2, color, -1)  # filled
+            cv2.putText(img, label, (c1[0], c1[1] - 2), 0, float(tl) / 9,
+                        [0, 0, 0], thickness=tf, lineType=cv2.LINE_AA)
 
-            top, left, bottom, right = box
-            if top - label_size[1] >= 0:
-                text_origin = np.array([left, top - label_size[1]])
-            else:
-                text_origin = np.array([left, top + 1])
-
-            thickness = 3
-            for j in range(thickness):
-                draw.rectangle(
-                    [left + j, top + j, right - j, bottom - j],
-                    outline=self.classifier.colors[indices[i]])
-            draw.rectangle(
-                [tuple(text_origin), tuple(text_origin + label_size)],
-                fill=self.classifier.colors[indices[i]])
-            draw.text(text_origin, label, fill=(0, 0, 0), font=font)
-            del draw
+        image = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 
         return image
 
@@ -168,4 +194,3 @@ if __name__ == '__main__':
                        "G405:9092,G406:9092,G407:9092,G408:9092,G409:9092,G410:9092,"
                        "G411:9092,G412:9092,G413:9092,G414:9092,G415:9092")
     sod.start_processing()
-

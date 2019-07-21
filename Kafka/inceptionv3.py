@@ -55,14 +55,13 @@ class Inceptionv3:
 
     def eval(self, single_foods):
         food = cv2.cvtColor(np.asarray(food), cv2.COLOR_RGB2BGR)
-        image = cv2.resize(food, (256, 256),
-                       interpolation=cv2.INTER_CUBIC)
+        image = cv2.resize(food, (256, 256), interpolation=cv2.INTER_CUBIC)
         image = np.array(image, dtype='float32')
         image /= 255.
         image = np.expand_dims(image, axis=0)
 
-            #ingredients, actual_class = self.model.predict(image)
-        ingredients, actual_class =deserialize_keras_model(bdmodel.value).predict(image)
+        #ingredients, actual_class = self.model.predict(image)
+        ingredients, actual_class = deserialize_keras_model(bdmodel.value).predict(image)
         index = np.argmax(actual_class)
         print('class index:', index)
         classes = [self.class_names[x] for x in result]

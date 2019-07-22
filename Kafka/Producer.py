@@ -15,10 +15,14 @@ class Kafka_producer():
         self.kafkaHost = kafkahost
         self.kafkaPort = kafkaport
         self.kafkatopic = kafkatopic
-        self.producer = KafkaProducer(bootstrap_servers='{kafka_host}:{kafka_port}'.format(
-            kafka_host=self.kafkaHost,
-            kafka_port=self.kafkaPort
-        ))
+        kafka_endpoint = "G4master:9092,G401:9092,G402:9092,G403:9092,G404:9092,"\
+               "G405:9092,G406:9092,G407:9092,G408:9092,G409:9092,G410:9092,"\
+               "G411:9092,G412:9092,G413:9092,G414:9092,G415:9092"
+        self.producer = KafkaProducer(bootstrap_servers=kafka_endpoint)
+        #self.producer = KafkaProducer(bootstrap_servers='{kafka_host}:{kafka_port}'.format(
+        #    kafka_host=self.kafkaHost,
+        #    kafka_port=self.kafkaPort
+        #))
 
     def sendjsondata(self, result):
         try:
@@ -42,17 +46,19 @@ def image_to_base64(image_path):
 
 def main():
     producer = Kafka_producer("G401", 9092, "inputImage")
-    for i in range(30):
-        start = timer()
-        image = image_to_base64("/home/hduser/Calories/0.jpg")
-        result = {
-            'start': start,
-            'image': image,
-            'user': "producer"+str(i)
-        }
-        print(str(i+1), "ok")
-        producer.sendjsondata(result)
-        time.sleep(0.01)
+    for j in range(10):
+        for i in range(30):
+            start = timer()
+            image = image_to_base64("/home/hduser/Calories/1.jpg")
+            result = {
+                'start': start,
+                'image': image,
+                'user': "producer"+str(i)
+            }
+            print(str(i+1), "ok")
+            producer.sendjsondata(result)
+            time.sleep(0.01)
+        time.sleep(10)
 
 
 if __name__ == '__main__':

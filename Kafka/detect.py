@@ -32,6 +32,25 @@ def handler(timestamp, message):
                      '\033[0m')  # End color
     start = timer()
     #for record in records:
+    def evalPar(iterator):
+        result=[]
+        for record in iterator:
+            event = json.loads(record[1])
+            decoded = base64.b64decode(event['image'])
+            stream = BytesIO(decoded)
+            image = Image.open(stream)
+            food = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
+            image = cv2.resize(food, (256, 256), interpolation=cv2.INTER_CUBIC)
+            image = np.array(image, dtype='float32')
+            image /= 255.
+            image = np.expand_dims(image, axis=0)
+            #ingredients, actual_class = model.predict(image)
+            ingredients, actual_class =bdmodel.value.predict(image)
+            index = np.argmax(actual_class)
+            print('class index:', index)
+            result.append(index)
+            #classes = [self.class_names[x] for x in result]
+        yield result
     def eval(record):
         event = json.loads(record[1])
         decoded = base64.b64decode(event['image'])
@@ -49,9 +68,9 @@ def handler(timestamp, message):
         print('class index:', index)
         #classes = [self.class_names[x] for x in result]
         return index
-    if(len(records)>0):
-        message=message.repartition(len(records))
-    result = message.mappartition(lambda x: eval(x))
+    #if(len(records)>0):
+     #   message=message.repartition(len(records))
+    result = message.mapPartitions(evalPar)
     print("------------------finished map--------------------------")
     #result = result.collect()
     print(result.count())

@@ -48,11 +48,14 @@ def handler(timestamp, message):
         index = np.argmax(actual_class)
         print('class index:', index)
         #classes = [self.class_names[x] for x in result]
-        return image
-
-    result = message.map(lambda x: eval(x))
+        return index
+    if(len(records)>0):
+        message=message.repartition(len(records))
+    result = message.mappartition(lambda x: eval(x))
     print("------------------finished map--------------------------")
+    #result = result.collect()
     print(result.count())
+    print("------------------finished count------------------------")
 
     def something():
         '''
@@ -130,8 +133,8 @@ def drawboxes(image, boxes, indices, final_classes, calories):
 '''
 
 
-topic_to_consume = {"inputImage": 0, "inputImage": 1, "inputImage": 2},
-topic_for_produce = "outputResult",
+topic_to_consume = {"inputImage": 0, "inputImage": 1, "inputImage": 2}
+topic_for_produce = "outputResult"
 kafka_endpoint = "G4master:9092,G401:9092,G402:9092,G403:9092,G404:9092,"\
                "G405:9092,G406:9092,G407:9092,G408:9092,G409:9092,G410:9092,"\
                "G411:9092,G412:9092,G413:9092,G414:9092,G415:9092"

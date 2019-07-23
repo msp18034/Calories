@@ -23,13 +23,13 @@ from volume import NutritionCalculator
 
 def handler(timestamp, message):
     """Collect messages, detect object and send to kafka endpoint."""
-    records = message.collect()
+    #records = message.collect()
     # For performance reasons, we only want to process the newest message
-    logger.info('\033[3' + str(randint(1, 7)) + ';1m' +  # Color
-                     '-' * 25 +
-                     '[ NEW MESSAGES: ' + str(len(records)) + ' ]'
-                     + '-' * 25 +
-                     '\033[0m')  # End color
+    #logger.info('\033[3' + str(randint(1, 7)) + ';1m' +  # Color
+     #                '-' * 25 +
+        #             '[ NEW MESSAGES: ' + str(len(records)) + ' ]'
+         #            + '-' * 25 +
+          #           '\033[0m')  # End color
     start = timer()
     #for record in records:
     def evalPar(iterator):
@@ -74,7 +74,11 @@ def handler(timestamp, message):
     print("------------------finished map--------------------------")
     #result = result.collect()
     print(result.count())
+    
     print("------------------finished count------------------------")
+    records=result.collect()
+    for record in records:
+        print(record)
 
     def something():
         '''
@@ -161,7 +165,7 @@ producer = KafkaProducer(bootstrap_servers=kafka_endpoint)
 
 # Load Spark Context
 sc = SparkContext(appName='MultiFood_detection')
-ssc = StreamingContext(sc, 2)  # , 3)
+ssc = StreamingContext(sc, 1)  # , 3)
 
 # Make Spark logging less extensive
 log4jLogger = sc._jvm.org.apache.log4j

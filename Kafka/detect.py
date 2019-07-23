@@ -16,9 +16,9 @@ from pyspark.streaming.kafka import KafkaUtils
 from kafka import KafkaProducer
 from keras.models import load_model, model_from_json
 # Model imports
-from yolov3 import YOLO
-from inceptionv3 import Inceptionv3
-from volume import NutritionCalculator
+import yolov3
+import classify
+import volume
 
 
 def handler(timestamp, message):
@@ -26,31 +26,80 @@ def handler(timestamp, message):
     #records = message.collect()
     # For performance reasons, we only want to process the newest message
     #logger.info('\033[3' + str(randint(1, 7)) + ';1m' +  # Color
-     #                '-' * 25 +
-        #             '[ NEW MESSAGES: ' + str(len(records)) + ' ]'
-         #            + '-' * 25 +
-          #           '\033[0m')  # End color
-    start = timer()
-    #for record in records:
+    #                '-' * 25 +
+    #                '[ NEW MESSAGES: ' + str(len(records)) + ' ]'
+    #                + '-' * 25 +
+    #                '\033[0m')  # End color
+    start_r = timer()
+
     def evalPar(iterator):
         result=[]
         for record in iterator:
+            start_p = timer()
             event = json.loads(record[1])
             decoded = base64.b64decode(event['image'])
             stream = BytesIO(decoded)
             image = Image.open(stream)
-            food = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
-            image = cv2.resize(food, (256, 256), interpolation=cv2.INTER_CUBIC)
-            image = np.array(image, dtype='float32')
-            image /= 255.
-            image = np.expand_dims(image, axis=0)
-            #ingredients, actual_class = model.predict(image)
-            ingredients, actual_class =bdmodel.value.predict(image)
-            index = np.argmax(actual_class)
-            print('class index:', index)
-            result.append(index)
-            #classes = [self.class_names[x] for x in result]
+            img = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
+            # image: PIL Image
+            # img: cv2 image 这个最好cache一下！
+
+            #YOLO part
+            start_y = timer()
+            pimage = yolov3.process_image(img)
+            outs = bdmodel_od.value.predict(pimage)
+            boxes, classes, scores = yolov3._yolo_out(outs, img.shape)
+            spoon_img, bowl_box, food_imgs = yolov3.fliter(img, boxes, scores, classes)
+            logger.info('object detection complete! time:'+str(timer()-start_y))
+
+            if spoon_img != 0 and len(boxes) > 0:
+                # classification part
+                start_c = timer()
+                pimg = classify.process_img(food_imgs)
+                p_result = bdmodel_cls.value.predict(pimg)
+                indices = [np.argmax(i) for i in p_result]
+                food_classes = [class_names[x] for x in indices]
+                logger.info('classification complete! time:' + str(timer()-start_c))
+
+                # volume part
+                start_v = timer()
+                c_result = volume.calculate_nutrition(food_imgs, food_classes, spoon_img, para, nutrition)
+                calories = c_result[:, 0].tolist()
+                logger.info('volume complete! time:' + str(timer()-start_v))
+
+                # draw part
+                start_d = timer()
+                drawn_image = classify.drawboxes(img, boxes, indices, food_classes, calories)
+                logger.info('draw complete! time:' + str(timer()-start_d))
+
+            else:
+                food_classes = ['Not Found']
+                calories = [0]
+                drawn_image = image
+
+            #output
+            img_out_buffer = BytesIO()
+            drawn_image.save(img_out_buffer, format='png')
+            byte_data = img_out_buffer.getvalue()
+            drawn_image_b = base64.b64encode(byte_data).decode('utf-8')
+
+            end = timer()
+            delta = end - start_p
+            logger.info('handler to evalPar:' + str(start_p - start_r))
+            logger.info('kafka to handler: ' + str(event['start'] - start_r))
+            logger.info('process time ' + str(delta))
+
+            output = {'user': event['user'],
+                      'start': event['start'],
+                      'class': food_classes,
+                      'calories': calories,
+                      # 'drawn_img': drawn_img_b,
+                      'process_time': delta
+                      }
+
+
         yield result
+
     def eval(record):
         event = json.loads(record[1])
         decoded = base64.b64decode(event['image'])
@@ -62,98 +111,29 @@ def handler(timestamp, message):
         image /= 255.
         image = np.expand_dims(image, axis=0)
 
-        #ingredients, actual_class = model.predict(image)
-        ingredients, actual_class =bdmodel.value.predict(image)
+        ingredients, actual_class =bdmodel_cls.value.predict(image)
         index = np.argmax(actual_class)
         print('class index:', index)
         #classes = [self.class_names[x] for x in result]
         return index
-    #if(len(records)>0):
-     #   message=message.repartition(len(records))
+
     result = message.mapPartitions(evalPar)
     print("------------------finished map--------------------------")
     #result = result.collect()
     print(result.count())
     
     print("------------------finished count------------------------")
-    records=result.collect()
+    records = result.collect()
     for record in records:
         print(record)
+        #outputResult(json.dumps(record))
 
-    def something():
-        '''
-        boxes, food_imgs, spoon_img = model_od.detect_food(image)
-        if spoon_img != 0 and len(boxes) > 0:
-            start_c = timer()
-            indices, food_classes = classifier.eval(food_imgs)
-            logger.info('classification complete! time:'+str(timer()-start_c))
-            start_v = timer()
-            result = calorie.calculate_nutrition(food_imgs, indices, spoon_img)
-            calories = result[:, 0].tolist()
-            logger.info('volume complete! time:'+ str(timer()-start_v))
-            start_d = timer()
-            drawn_img = drawboxes(image, boxes, indices, food_classes, calories)
-            logger.info('draw complete! time:' + str(timer()-start_d))
-
-        else:
-            food_classes = ['Not Found']
-            calories = [0]
-            drawn_img = image
-
-        img_out_buffer = BytesIO()
-        drawn_img.save(img_out_buffer, format='png')
-        byte_data = img_out_buffer.getvalue()
-        drawn_img_b = base64.b64encode(byte_data).decode('utf-8')
-
-        end = timer()
-        delta = start-event['start']
-        logger.info('Started at ' + str(event['start']) + ' seconds.')
-        logger.info('Done after ' + str(delta) + ' seconds.')
-        logger.info('Find'+str(len(boxes)) + 'dish(s).')
-
-        result = {'user': event['user'],
-                  'start': event['start'],
-                  'class': food_classes,
-                  'calories': calories,
-                  # 'drawn_img': drawn_img_b,
-                  'process_time': delta
-                  }
-
-        outputResult(json.dumps(result))
-        '''
 
 def outputResult(message):
     logger.info("Now sending out....")
     producer.send(topic_for_produce, message.encode('utf-8'))
     producer.flush()
 
-'''
-def drawboxes(image, boxes, indices, final_classes, calories):
-    img = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
-    tl = 5  # line thickness
-
-    for i in range(len(boxes)):
-        cls = final_classes[i]
-        box = boxes[i]
-        cal = calories[i]
-        label = '{} {}cal'.format(cls, int(cal))
-        color = classifier.colors[indices[i]]
-        c1, c2 = (int(box[0]), int(box[1])), (int(box[2]), int(box[3]))
-        cv2.rectangle(img, c1, c2, color, thickness=tl)
-        # label
-        tf = 1  # font thickness
-        t_size = cv2.getTextSize(label, 0, fontScale=float(tl) / 8, thickness=tf)[0]
-        if box[1] - t_size[1] < 0:
-            c1 = c1[0], c1[1] + t_size[1]
-        c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
-        cv2.rectangle(img, c1, c2, color, -1)  # filled
-        cv2.putText(img, label, (c1[0], c1[1] - 2), 0, float(tl) / 9,
-                    [0, 0, 0], thickness=tf, lineType=cv2.LINE_AA)
-
-    image = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-
-    return image
-'''
 
 
 topic_to_consume = {"inputImage": 0, "inputImage": 1, "inputImage": 2}
@@ -175,14 +155,25 @@ log4jLogger.LogManager.getLogger('akka').setLevel(log_level)
 log4jLogger.LogManager.getLogger('kafka').setLevel(log_level)
 logger = log4jLogger.LogManager.getLogger(__name__)
 
-# Load Network Model & Broadcast to Worker Nodes
-#detect = YOLO()
-#classifier = Inceptionv3()
-#calorie = NutritionCalculator()
-model = load_model("/home/hduser/model_weights/cusine.h5")
-print("loaded model")
-bdmodel = sc.broadcast(model)
-print("broadcasted")
+model_od = load_model("/home/hduser/model_weights/yolo.h5")
+print("loaded model object detection")
+bdmodel_od = sc.broadcast(model_od)
+print("broadcasted model detection")
+
+model_cls = load_model("/home/hduser/model_weights/cusine.h5")
+print("loaded model classification")
+bdmodel_cls = sc.broadcast(model_cls)
+print("broadcasted model classification")
+
+class_name_path = "/home/hduser/Calories/dataset/172FoodList.txt"
+class_names = classify.read_class_names(class_name_path)
+para_path = '/home/hduser/Calories/dataset/shape_density.csv'
+# [编号，shape_type, 参数, 密度g/ml]
+para = np.loadtxt(para_path, delimiter=',')
+nutrition_path = '/home/hduser/Calories/dataset/nutrition.csv'
+# [编号，热量，碳水化合物，脂肪，蛋白质，纤维素]
+nutrition = np.loadtxt(nutrition_path, delimiter=',')
+
 
 zookeeper = "G4master:2181,G401:2181,G402:2181,G403:2181,G404:2181,G405:2181,G406:2181,G407:2181," \
             "G408:2181,G409:2181,G410:2181,G411:2181,G412:2181,G413:2181,G414:2181,G415:2181"
@@ -194,7 +185,4 @@ kvs = KafkaUtils.createStream(ssc, zookeeper, groupid, topic_to_consume)
 kvs.foreachRDD(handler)
 ssc.start()
 ssc.awaitTermination()
-
-
-
 

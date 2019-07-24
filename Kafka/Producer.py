@@ -49,7 +49,7 @@ def main():
     for j in range(10):
         for i in range(20):
             start = timer()
-            image = image_to_base64("/home/hduser/Calories/1.jpg")
+            image = image_to_base64("/home/hduser/Calories/0.jpg")
             result = {
                 'start': start,
                 'image': image,
@@ -57,7 +57,7 @@ def main():
             }
             print(str(i+1), "ok")
             producer.sendjsondata(result)
-            time.sleep(0.5)
+            time.sleep(0.05)
         time.sleep(10)
 
 

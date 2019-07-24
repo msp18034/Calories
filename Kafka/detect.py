@@ -16,7 +16,7 @@ from pyspark.streaming.kafka import KafkaUtils
 from kafka import KafkaProducer
 from keras.models import load_model, model_from_json
 # Model imports
-import yolov3
+import yolov3 
 import classify
 import volume
 
@@ -46,31 +46,31 @@ def handler(timestamp, message):
 
             #YOLO part
             start_y = timer()
-            pimage = yolov3.process_image(img)
+            pimage =yolov3.process_image(img)
             outs = bdmodel_od.value.predict(pimage)
             boxes, classes, scores = yolov3._yolo_out(outs, img.shape)
-            spoon_img, bowl_box, food_imgs = yolov3.fliter(img, boxes, scores, classes)
-            logger.info('object detection complete! time:'+str(timer()-start_y))
+            #result.append(yolov3._yolo_out(outs, img.shape))
 
-            if spoon_img != 0 and len(boxes) > 0:
+            spoon_img, boxes, food_imgs = yolov3.fliter(img, boxes, scores, classes)
+            #result.append( yolov3.fliter(img, boxes, scores, classes))
+
+            if len(spoon_img)>0  and len(boxes) > 0:
                 # classification part
                 start_c = timer()
                 pimg = classify.process_img(food_imgs)
-                p_result = bdmodel_cls.value.predict(pimg)
+                
+                _,p_result = bdmodel_cls.value.predict(pimg)
                 indices = [np.argmax(i) for i in p_result]
                 food_classes = [class_names[x] for x in indices]
-                logger.info('classification complete! time:' + str(timer()-start_c))
-
+                result.append(food_classes)
                 # volume part
                 start_v = timer()
-                c_result = volume.calculate_nutrition(food_imgs, food_classes, spoon_img, para, nutrition)
+                c_result = volume.calculate_nutrition(food_imgs, indices, spoon_img, para, nutrition)
                 calories = c_result[:, 0].tolist()
-                logger.info('volume complete! time:' + str(timer()-start_v))
 
                 # draw part
                 start_d = timer()
                 drawn_image = classify.drawboxes(img, boxes, indices, food_classes, calories)
-                logger.info('draw complete! time:' + str(timer()-start_d))
 
             else:
                 food_classes = ['Not Found']
@@ -85,48 +85,33 @@ def handler(timestamp, message):
 
             end = timer()
             delta = end - start_p
-            logger.info('handler to evalPar:' + str(start_p - start_r))
-            logger.info('kafka to handler: ' + str(event['start'] - start_r))
-            logger.info('process time ' + str(delta))
-
+            
             output = {'user': event['user'],
                       'start': event['start'],
                       'class': food_classes,
                       'calories': calories,
+                      'yolo': start_c-start_y,
+                      'classification': start_v-start_c,
+                      'volume': start_d-start_v,
                       # 'drawn_img': drawn_img_b,
                       'process_time': delta
                       }
+            output=json.dumps(output)
+            yield output
+            
+           # result.append("hello")
 
-
-        yield result
-
-    def eval(record):
-        event = json.loads(record[1])
-        decoded = base64.b64decode(event['image'])
-        stream = BytesIO(decoded)
-        image = Image.open(stream)
-        food = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
-        image = cv2.resize(food, (256, 256), interpolation=cv2.INTER_CUBIC)
-        image = np.array(image, dtype='float32')
-        image /= 255.
-        image = np.expand_dims(image, axis=0)
-
-        ingredients, actual_class =bdmodel_cls.value.predict(image)
-        index = np.argmax(actual_class)
-        print('class index:', index)
-        #classes = [self.class_names[x] for x in result]
-        return index
+        #yield result
 
     result = message.mapPartitions(evalPar)
     print("------------------finished map--------------------------")
-    #result = result.collect()
-    print(result.count())
-    
-    print("------------------finished count------------------------")
     records = result.collect()
+    print("-----------------",len(records),"------------------------")
     for record in records:
         print(record)
-        #outputResult(json.dumps(record))
+        outputResult(record)        
+ 
+    print("------------------finished count------------------------")
 
 
 def outputResult(message):

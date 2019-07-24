@@ -19,7 +19,8 @@ from PIL import Image
 # classes_path = '../dataset/coco_classes.txt'
 # class_name = _get_class(classes_path)
 
-
+def test():
+    print("ttttttttttttttttt")
 def _get_class(path):
     with open(path) as f:
         class_names = f.readlines()

@@ -62,7 +62,9 @@ def process_img(food_imgs):
                        interpolation=cv2.INTER_CUBIC)
         image = np.array(image, dtype='float32')
         image /= 255.
+        image=np.expand_dims(image,axis=0)
         pimgs.append(image)
+    pimgs=np.concatenate([x for x in pimgs])
     return pimgs
 
 '''

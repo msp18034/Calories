@@ -19,6 +19,7 @@ from keras.models import load_model, model_from_json
 import yolov3 
 import classify
 import volume
+import tensorflow as tf
 
 
 def handler(timestamp, message):
@@ -31,7 +32,7 @@ def handler(timestamp, message):
     #                + '-' * 25 +
     #                '\033[0m')  # End color
     start_r = timer()
-    '''
+    
     def evalPar(iterator):
         result=[]
         for record in iterator:
@@ -46,6 +47,8 @@ def handler(timestamp, message):
 
             #YOLO part
             start_y = timer()
+            #graph = tf.get_default_graph()
+            #with graph.as_default():
             pimage = yolov3.process_image(img)
             outs = bdmodel_od.value.predict(pimage)
             boxes, classes, scores = yolov3._yolo_out(outs, img.shape)
@@ -100,7 +103,7 @@ def handler(timestamp, message):
             yield output
 
         #yield result
-    '''
+    
 
     def eval(record):
         start_p = timer()
@@ -165,10 +168,10 @@ def handler(timestamp, message):
                   'process_time': delta
                   }
         output = json.dumps(output)
-        yield output
+        return output
 
-    #result = message.mapPartitions(evalPar)
-    result = message.map(eval)
+    result = message.mapPartitions(evalPar)
+    #result = message.map(lambda x:eval(x))
     print("------------------finished map--------------------------")
     records = result.collect()
     print("-----------------", len(records), "------------------------")

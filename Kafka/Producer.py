@@ -47,18 +47,18 @@ def image_to_base64(image_path):
 def main():
     producer = Kafka_producer("G401", 9092, "inputImage")
     for j in range(10):
-        for i in range(14):
+        for i in range(2):
             start = timer()
             image = image_to_base64("/home/hduser/Calories/0.jpg")
             result = {
                 'start': start,
                 'image': image,
-                'user': "producer"+str(i)
+                'user': "test"+str(i)
             }
             print(str(i+1), "ok")
             producer.sendjsondata(result)
-            time.sleep(0.5)
-        time.sleep(30)
+            time.sleep(5)
+        time.sleep(10)
 
 
 if __name__ == '__main__':

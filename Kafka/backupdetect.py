@@ -57,9 +57,11 @@ class Spark_Calorie_Calculator():
 
         # Load Network Model & Broadcast to Worker Nodes
         self.model_od = load_model("/home/hduser/model_weights/yolo.h5")
+        self.model_od._make_predict_function()
         print("loaded model object detection")
 
         self.model_cls = load_model("/home/hduser/model_weights/cusine.h5")
+        self.model_cls._make_predict_function()
         print("loaded model classification")
 
         class_name_path = "/home/hduser/Calories/dataset/172FoodList.txt"

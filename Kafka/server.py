@@ -25,7 +25,7 @@ class MyHandler(BaseHTTPRequestHandler):
         producer = Kafka_producer("G4master", 9092, "inputImage")
         producer.sendjsondata(result)
 
-        consumer = Kafka_consumer("G4master", 9092, "outputResult")
+        consumer = Kafka_consumer("G4master", 9092, "outputResult1")
         jsonData = consumer.getUserFeedback(userid)
         json_str = json.dumps(jsonData)
         json_encode = json_str.encode("utf-8")
@@ -37,7 +37,7 @@ class MyHandler(BaseHTTPRequestHandler):
 
 def main():
     try:
-        server = HTTPServer(('10.244.12.12', 11450), MyHandler) #启动服务
+        server = HTTPServer(('10.244.10.12', 11450), MyHandler) #启动服务
         print('Welcome to the server.......')
         server.serve_forever()  # 一直运行
     except KeyboardInterrupt:

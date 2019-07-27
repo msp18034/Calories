@@ -64,7 +64,7 @@ class Spark_Calorie_Calculator():
         self.model_cls._make_predict_function()
         print("loaded model classification")
 
-        class_name_path = "/home/hduser/Calories/dataset/172FoodList.txt"
+        class_name_path = "/home/hduser/Calories/dataset/172FoodList-en.txt"
         self.class_names = classify.read_class_names(class_name_path)
         para_path = '/home/hduser/Calories/dataset/shape_density.csv'
         # [编号，shape_type, 参数, 密度g/ml]
@@ -115,7 +115,7 @@ class Spark_Calorie_Calculator():
             outs = self.model_od.predict(pimage)
             boxes, classes, scores = yolov3._yolo_out(outs, img.shape)
             spoon_img, bowl_boxes, food_imgs = yolov3.fliter(img, boxes, scores, classes)
-
+            drawn_image = []
             if len(spoon_img) > 0 and len(bowl_boxes) > 0:
                 # classification part
                 start_c = timer()
@@ -161,7 +161,7 @@ class Spark_Calorie_Calculator():
             self.logger.info('Done after ' + str(delta) + ' seconds.')
 
             output = {'user': event['user'],
-                      'start': event['start'],
+                     # 'start': event['start'],
                       'class': food_classes,
                       'calories': calories,
                       'fat': fat,
@@ -191,7 +191,7 @@ class Spark_Calorie_Calculator():
 if __name__ == '__main__':
     sod = Spark_Calorie_Calculator(
         topic_to_consume={"inputImage": 0, "inputImage": 1, "inputImage": 2},
-        topic_for_produce="outputResult",
+        topic_for_produce="outputResult1",
         kafka_endpoint="G4master:9092,G401:9092,G402:9092,G403:9092,G404:9092,"
                        "G405:9092,G406:9092,G407:9092,G408:9092,G409:9092,G410:9092,"
                        "G411:9092,G412:9092,G413:9092,G414:9092,G415:9092")

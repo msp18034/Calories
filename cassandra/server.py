@@ -36,7 +36,7 @@ class MyHandler(BaseHTTPRequestHandler):
                     }
             json_str = json.dumps(jsonData)
             results.append(json_str)
-        print(len(results)+"records found")
+        print(str(len(results))+"records found")
         results_str = '|'.join(results)
         print(len(results_str))
         results_encode = results_str.encode("utf-8")

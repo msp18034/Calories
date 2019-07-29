@@ -22,6 +22,77 @@ import volume
 import tensorflow as tf
 
 
+def evalPar(iterator):
+    result = []
+    for record in iterator:
+        start_p = timer()
+        event = json.loads(record[1])
+        decoded = base64.b64decode(event['image'])
+        stream = BytesIO(decoded)
+        image = Image.open(stream)
+        img = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
+        # image: PIL Image
+        # img: cv2 image 这个最好cache一下！
+
+        # YOLO part
+        start_y = timer()
+        # graph = tf.get_default_graph()
+        # with graph.as_default():
+        pimage = yolov3.process_image(img)
+        outs = bdmodel_od.value.predict(pimage)
+        boxes, classes, scores = yolov3._yolo_out(outs, img.shape)
+        # result.append(yolov3._yolo_out(outs, img.shape))
+
+        spoon_img, bowl_boxes, food_imgs = yolov3.fliter(img, boxes, scores, classes)
+        # result.append( yolov3.fliter(img, boxes, scores, classes))
+
+        if len(spoon_img) > 0 and len(bowl_boxes) > 0:
+            # classification part
+            start_c = timer()
+            pimg = classify.process_img(food_imgs)
+
+            _, p_result = bdmodel_cls.value.predict(pimg)
+            indices = [np.argmax(i) for i in p_result]
+            food_classes = [class_names[x] for x in indices]
+            result.append(food_classes)
+            # volume part
+            start_v = timer()
+            c_result = volume.calculate_nutrition(food_imgs, indices, spoon_img, para, nutrition)
+            calories = c_result[:, 0].tolist()
+
+            # draw part
+            start_d = timer()
+            drawn_image = classify.drawboxes(img, bowl_boxes, indices, food_classes, calories)
+
+        else:
+            food_classes = ['Not Found']
+            calories = [0]
+            drawn_image = image
+
+        # output
+        img_out_buffer = BytesIO()
+        drawn_image.save(img_out_buffer, format='png')
+        byte_data = img_out_buffer.getvalue()
+        drawn_image_b = base64.b64encode(byte_data).decode('utf-8')
+
+        end = timer()
+        delta = end - start_p
+
+        output = {'user': event['user'],
+                  'start': event['start'],
+                  'class': food_classes,
+                  'calories': calories,
+                  'yolo': start_c - start_y,
+                  'classification': start_v - start_c,
+                  'volume': start_d - start_v,
+                  # 'drawn_img': drawn_img_b,
+                  'process_time': delta
+                  }
+        output = json.dumps(output)
+        # outputResult(output)
+        yield output
+
+    # yield result
 def handler(timestamp, message):
     """Collect messages, detect object and send to kafka endpoint."""
     #records = message.collect()
@@ -32,78 +103,7 @@ def handler(timestamp, message):
     #                + '-' * 25 +
     #                '\033[0m')  # End color
     start_r = timer()
-    
-    def evalPar(iterator):
-        result=[]
-        for record in iterator:
-            start_p = timer()
-            event = json.loads(record[1])
-            decoded = base64.b64decode(event['image'])
-            stream = BytesIO(decoded)
-            image = Image.open(stream)
-            img = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
-            # image: PIL Image
-            # img: cv2 image 这个最好cache一下！
 
-            #YOLO part
-            start_y = timer()
-            #graph = tf.get_default_graph()
-            #with graph.as_default():
-            pimage = yolov3.process_image(img)
-            outs = bdmodel_od.value.predict(pimage)
-            boxes, classes, scores = yolov3._yolo_out(outs, img.shape)
-            #result.append(yolov3._yolo_out(outs, img.shape))
-
-            spoon_img, bowl_boxes, food_imgs = yolov3.fliter(img, boxes, scores, classes)
-            #result.append( yolov3.fliter(img, boxes, scores, classes))
-
-            if len(spoon_img) > 0 and len(bowl_boxes) > 0:
-                # classification part
-                start_c = timer()
-                pimg = classify.process_img(food_imgs)
-                
-                _,p_result = bdmodel_cls.value.predict(pimg)
-                indices = [np.argmax(i) for i in p_result]
-                food_classes = [class_names[x] for x in indices]
-                result.append(food_classes)
-                # volume part
-                start_v = timer()
-                c_result = volume.calculate_nutrition(food_imgs, indices, spoon_img, para, nutrition)
-                calories = c_result[:, 0].tolist()
-
-                # draw part
-                start_d = timer()
-                drawn_image = classify.drawboxes(img, bowl_boxes, indices, food_classes, calories)
-
-            else:
-                food_classes = ['Not Found']
-                calories = [0]
-                drawn_image = image
-
-            #output
-            img_out_buffer = BytesIO()
-            drawn_image.save(img_out_buffer, format='png')
-            byte_data = img_out_buffer.getvalue()
-            drawn_image_b = base64.b64encode(byte_data).decode('utf-8')
-
-            end = timer()
-            delta = end - start_p
-            
-            output = {'user': event['user'],
-                      'start': event['start'],
-                      'class': food_classes,
-                      'calories': calories,
-                      'yolo': start_c-start_y,
-                      'classification': start_v-start_c,
-                      'volume': start_d-start_v,
-                      # 'drawn_img': drawn_img_b,
-                      'process_time': delta
-                      }
-            output = json.dumps(output)
-            #outputResult(output)
-            yield output
-
-        #yield result
     
 
     def eval(record):

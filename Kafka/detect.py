@@ -116,22 +116,24 @@ def handler(timestamp, message):
         # image: PIL Image
         # img: cv2 image 这个最好cache一下！
 
-        #YOLO part
+        # YOLO part
         start_y = timer()
+        # graph = tf.get_default_graph()
+        # with graph.as_default():
         pimage = yolov3.process_image(img)
         outs = bdmodel_od.value.predict(pimage)
         boxes, classes, scores = yolov3._yolo_out(outs, img.shape)
-        #result.append(yolov3._yolo_out(outs, img.shape))
+        # result.append(yolov3._yolo_out(outs, img.shape))
 
         spoon_img, bowl_boxes, food_imgs = yolov3.fliter(img, boxes, scores, classes)
-        #result.append( yolov3.fliter(img, boxes, scores, classes))
+        # result.append( yolov3.fliter(img, boxes, scores, classes))
 
         if len(spoon_img) > 0 and len(bowl_boxes) > 0:
             # classification part
             start_c = timer()
             pimg = classify.process_img(food_imgs)
 
-            _,p_result = bdmodel_cls.value.predict(pimg)
+            _, p_result = bdmodel_cls.value.predict(pimg)
             indices = [np.argmax(i) for i in p_result]
             food_classes = [class_names[x] for x in indices]
             result.append(food_classes)
@@ -149,7 +151,7 @@ def handler(timestamp, message):
             calories = [0]
             drawn_image = image
 
-        #output
+        # output
         img_out_buffer = BytesIO()
         drawn_image.save(img_out_buffer, format='png')
         byte_data = img_out_buffer.getvalue()
@@ -162,17 +164,18 @@ def handler(timestamp, message):
                   'start': event['start'],
                   'class': food_classes,
                   'calories': calories,
-                  'yolo': start_c-start_y,
-                  'classification': start_v-start_c,
-                  'volume': start_d-start_v,
+                  'yolo': start_c - start_y,
+                  'classification': start_v - start_c,
+                  'volume': start_d - start_v,
                   # 'drawn_img': drawn_img_b,
                   'process_time': delta
                   }
         output = json.dumps(output)
+        # outputResult(output)
         return output
 
-    result = message.mapPartitions(evalPar)
-    #result = message.map(eval)
+    #result = message.mapPartitions(evalPar)
+    result = message.map(eval)
     print("------------------finished map--------------------------")
     records = result.collect()
     print("-----------------", len(records), "------------------------")

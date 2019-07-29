@@ -9,10 +9,14 @@ class Kafka_consumer():
         self.kafkaHost = kafkahost
         self.kafkaPort = kafkaport
         self.kafkatopic = kafkatopic
-        self.consumer = KafkaConsumer(self.kafkatopic, bootstrap_servers='{kafka_host}:{kafka_port}'.format(
+        kafka_endpoint = "G4master:9092,G401:9092,G402:9092,G403:9092,G404:9092,"\
+               "G405:9092,G406:9092,G407:9092,G408:9092,G409:9092,G410:9092,"\
+               "G411:9092,G412:9092,G413:9092,G414:9092,G415:9092"
+        self.consumer = KafkaConsumer(self.kafkatopic,bootstrap_servers=kafka_endpoint)
+        '''self.consumer = KafkaConsumer(self.kafkatopic, bootstrap_servers='{kafka_host}:{kafka_port}'.format(
             kafka_host=self.kafkaHost,
             kafka_port=self.kafkaPort
-        ))
+        ))'''
 
     def getUserFeedback(self, userid):
         try:
@@ -20,9 +24,9 @@ class Kafka_consumer():
             for msg in self.consumer:
                 dmsg = msg.value.decode("utf-8")
                 jmsg = json.loads(dmsg)
-                if jmsg['user'] == userid:
-                    self.consumer.close()
-                    return jmsg
+                #if jmsg['user'] == userid:
+                self.consumer.close()
+                return jmsg
         except KafkaError as e:
             print(e)
 

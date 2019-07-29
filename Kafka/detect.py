@@ -100,6 +100,7 @@ def handler(timestamp, message):
                       'process_time': delta
                       }
             output = json.dumps(output)
+            #outputResult(output)
             yield output
 
         #yield result
@@ -171,13 +172,13 @@ def handler(timestamp, message):
         return output
 
     result = message.mapPartitions(evalPar)
-    #result = message.map(lambda x:eval(x))
+    #result = message.map(eval)
     print("------------------finished map--------------------------")
     records = result.collect()
     print("-----------------", len(records), "------------------------")
     for record in records:
         print(record)
-        outputResult(record)        
+        #outputResult(record)        
  
     print("------------------finished count------------------------")
 
@@ -191,14 +192,14 @@ def outputResult(message):
 
 topic_to_consume = {"inputImage": 0, "inputImage": 1, "inputImage": 2}
 topic_for_produce = "outputResult"
-kafka_endpoint = "G4master:9092,G401:9092,G402:9092,G403:9092,G404:9092,"\
+kafka_endpoint = "G401:9092,G402:9092,G403:9092,G404:9092,"\
                "G405:9092,G406:9092,G407:9092,G408:9092,G409:9092,G410:9092,"\
                "G411:9092,G412:9092,G413:9092,G414:9092,G415:9092"
 producer = KafkaProducer(bootstrap_servers=kafka_endpoint)
 
 # Load Spark Context
 sc = SparkContext(appName='MultiFood_detection')
-ssc = StreamingContext(sc, 1)  # , 3)
+ssc = StreamingContext(sc, 0.4)  # odcast(producer)Z oo
 
 # Make Spark logging less extensive
 log4jLogger = sc._jvm.org.apache.log4j
@@ -217,7 +218,7 @@ model_cls = load_model("/home/hduser/model_weights/cusine.h5")
 print("loaded model classification")
 bdmodel_cls = sc.broadcast(model_cls)
 print("broadcasted model classification")
-
+bdPro=sc.broadcast(producer)
 class_name_path = "/home/hduser/Calories/dataset/172FoodList.txt"
 class_names = classify.read_class_names(class_name_path)
 para_path = '/home/hduser/Calories/dataset/shape_density.csv'
@@ -234,7 +235,7 @@ groupid = "test-consumer-group"
 
 """Start consuming from Kafka endpoint and detect objects."""
 kvs = KafkaUtils.createStream(ssc, zookeeper, groupid, topic_to_consume)
-
+#kvs = KafkaUtils.createDirectStream(ssc, topics=['inputImage2'],kafkaParams = {"metadata.broker.list":kafka_endpoint})
 kvs.foreachRDD(handler)
 ssc.start()
 ssc.awaitTermination()

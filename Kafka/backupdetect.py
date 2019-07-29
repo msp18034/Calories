@@ -9,16 +9,21 @@ import cv2
 from random import randint
 from io import BytesIO
 import keras
+from keras.models import load_model
 # Streaming imports
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
 from kafka import KafkaProducer
 
+#cassandra imports
+from cassandra.cluster import Cluster
+from datetime import datetime
+
 # Model imports
-from yolov3 import YOLO
-from inceptionv3 import Inceptionv3
-from volume import NutritionCalculator
+import yolov3
+import classify
+import volume
 
 
 class Spark_Calorie_Calculator():
@@ -34,6 +39,10 @@ class Spark_Calorie_Calculator():
         self.kafka_endpoint = kafka_endpoint
         self.producer = KafkaProducer(bootstrap_servers=kafka_endpoint)
 
+        #connect to cassandra
+        cluster = Cluster(['G401', 'G402'])  # 随意写两个就能找到整个集群
+        self.session = cluster.connect("fooddiary")
+
         # Load Spark Context
         sc = SparkContext(appName='MultiFood_detection')
         self.ssc = StreamingContext(sc, 2)  # , 3)
@@ -47,9 +56,22 @@ class Spark_Calorie_Calculator():
         self.logger = log4jLogger.LogManager.getLogger(__name__)
 
         # Load Network Model & Broadcast to Worker Nodes
-        self.model_od = YOLO()
-        self.classifier = Inceptionv3()
-        self.calorie = NutritionCalculator()
+        self.model_od = load_model("/home/hduser/model_weights/yolo.h5")
+        self.model_od._make_predict_function()
+        print("loaded model object detection")
+
+        self.model_cls = load_model("/home/hduser/model_weights/cusine.h5")
+        self.model_cls._make_predict_function()
+        print("loaded model classification")
+
+        class_name_path = "/home/hduser/Calories/dataset/172FoodList-en.txt"
+        self.class_names = classify.read_class_names(class_name_path)
+        para_path = '/home/hduser/Calories/dataset/shape_density.csv'
+        # [编号，shape_type, 参数, 密度g/ml]
+        self.para = np.loadtxt(para_path, delimiter=',')
+        nutrition_path = '/home/hduser/Calories/dataset/nutrition.csv'
+        # [编号，热量，碳水化合物，脂肪，蛋白质，纤维素]
+        self.nutrition = np.loadtxt(nutrition_path, delimiter=',')
 
 
     def start_processing(self):
@@ -78,88 +100,98 @@ class Spark_Calorie_Calculator():
 
         for record in records:
 
+            start_p = timer()
             event = json.loads(record[1])
-            self.logger.info('Received Message from:' + event['user'])
             decoded = base64.b64decode(event['image'])
             stream = BytesIO(decoded)
             image = Image.open(stream)
-            self.logger.info('image open! size'+str(image.size))
+            img = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
+            # image: PIL Image
+            # img: cv2 image 这个最好cache一下！
 
-            boxes, food_imgs, spoon_img = self.model_od.detect_food(image)
-            if spoon_img != 0 and len(boxes) > 0:
+            #YOLO part
+            start_y = timer()
+            pimage = yolov3.process_image(img)
+            outs = self.model_od.predict(pimage)
+            boxes, classes, scores = yolov3._yolo_out(outs, img.shape)
+            spoon_img, bowl_boxes, food_imgs = yolov3.fliter(img, boxes, scores, classes)
+            drawn_image = []
+            if len(spoon_img) > 0 and len(bowl_boxes) > 0:
+                # classification part
                 start_c = timer()
-                indices, food_classes = self.classifier.eval(food_imgs)
+                pimg = classify.process_img(food_imgs)
+                _,p_result = self.model_cls.predict(pimg)
+                indices = [np.argmax(i) for i in p_result]
+                food_classes = [self.class_names[x] for x in indices]
                 self.logger.info('classification complete! time:'+str(timer()-start_c))
+
+                # volume part
                 start_v = timer()
-                result = self.calorie.calculate_nutrition(food_imgs, indices, spoon_img)
-                calories = result[:, 0].tolist()
-                self.logger.info('volume complete! time:'+ str(timer()-start_v))
+                c_result = volume.calculate_nutrition(food_imgs, indices, spoon_img, self.para, self.nutrition)
+                #热量，碳水化合物，脂肪，蛋白质，纤维素
+                calories = c_result[:, 0].tolist()
+                carbo = c_result[:, 1].tolist()
+                protein = c_result[:, 3].tolist()
+                fat = c_result[:, 2].tolist()
+                fiber = c_result[:, 4].tolist()
+                self.logger.info('volume complete! time:' + str(timer()-start_v))
+
+                # draw part
                 start_d = timer()
-                drawn_img = self.drawboxes(image, boxes, indices, food_classes, calories)
+                drawn_image = classify.drawboxes(img, bowl_boxes, indices, food_classes, calories)
                 self.logger.info('draw complete! time:' + str(timer()-start_d))
 
             else:
                 food_classes = ['Not Found']
                 calories = [0]
-                drawn_img = image
+                carbo = [0]
+                fat = [0]
+                fiber = [0]
+                protein = [0]
+                drawn_image = image
 
+            #output
             img_out_buffer = BytesIO()
-            drawn_img.save(img_out_buffer, format='png')
+            drawn_image.save(img_out_buffer, format='png')
             byte_data = img_out_buffer.getvalue()
-            drawn_img_b = base64.b64encode(byte_data).decode('utf-8')
+            drawn_image_b = base64.b64encode(byte_data).decode('utf-8')
 
             end = timer()
-            delta = start-event['start']
-            self.logger.info('Started at ' + str(event['start']) + ' seconds.')
+            delta = end - start_p
             self.logger.info('Done after ' + str(delta) + ' seconds.')
-            self.logger.info('Find'+str(len(boxes)) + 'dish(s).')
 
-            result = {'user': event['user'],
-                      'start': event['start'],
+            output = {'user': event['user'],
+                     # 'start': event['start'],
                       'class': food_classes,
                       'calories': calories,
-                      # 'drawn_img': drawn_img_b,
+                      'fat': fat,
+                      'protein': protein,
+                      'carbo': carbo,
+                      'fiber': fiber,
+                      'drawn_img': drawn_image_b,
                       'process_time': delta
                       }
 
-            self.outputResult(json.dumps(result))
+            self.outputResult(output)
 
-    def outputResult(self, message):
+    def outputResult(self, jsondata):
+        message = json.dumps(jsondata)
         self.logger.info("Now sending out....")
         self.producer.send(self.topic_for_produce, message.encode('utf-8'))
         self.producer.flush()
+        time = datetime.now()
 
-    def drawboxes(self, image, boxes, indices, final_classes, calories):
-        img = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
-        tl = 5  # line thickness
-
-        for i in range(len(boxes)):
-            cls = final_classes[i]
-            box = boxes[i]
-            cal = calories[i]
-            label = '{} {}cal'.format(cls, int(cal))
-            color = self.classifier.colors[indices[i]]
-            c1, c2 = (int(box[0]), int(box[1])), (int(box[2]), int(box[3]))
-            cv2.rectangle(img, c1, c2, color, thickness=tl)
-            # label
-            tf = 1  # font thickness
-            t_size = cv2.getTextSize(label, 0, fontScale=float(tl) / 8, thickness=tf)[0]
-            if box[1] - t_size[1] < 0:
-                c1 = c1[0], c1[1] + t_size[1]
-            c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
-            cv2.rectangle(img, c1, c2, color, -1)  # filled
-            cv2.putText(img, label, (c1[0], c1[1] - 2), 0, float(tl) / 9,
-                        [0, 0, 0], thickness=tf, lineType=cv2.LINE_AA)
-
-        image = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-
-        return image
+        query = "INSERT INTO records (id, time, photo, food, calorie, carbo, protein, fat, fiber)"\
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        self.session.execute(query, (jsondata['user'], time, jsondata['drawn_img'], jsondata['class'],
+                                     jsondata['calories'], jsondata['carbo'], jsondata['protein'],
+                                     jsondata['fat'], jsondata['fiber']))
 
 
 if __name__ == '__main__':
     sod = Spark_Calorie_Calculator(
         topic_to_consume={"inputImage": 0, "inputImage": 1, "inputImage": 2},
-        topic_for_produce="outputResult",
+        topic_for_produce="outputResult1",
         kafka_endpoint="G4master:9092,G401:9092,G402:9092,G403:9092,G404:9092,"
                        "G405:9092,G406:9092,G407:9092,G408:9092,G409:9092,G410:9092,"
                        "G411:9092,G412:9092,G413:9092,G414:9092,G415:9092")

@@ -272,7 +272,7 @@ def fliter(img, boxes, scores, classes):
     bowl_box = []
     food_img = []
     spoon_score = 0
-    spoon_img = 0
+    spoon_img = []
     for box, score, cl in zip(boxes, scores, classes):
         x, y, w, h = box
 

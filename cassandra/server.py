@@ -3,6 +3,7 @@ from cassandra.cluster import Cluster
 from io import BytesIO
 import cgi
 import json
+import datetime
 
 class MyHandler(BaseHTTPRequestHandler):
 
@@ -15,39 +16,44 @@ class MyHandler(BaseHTTPRequestHandler):
         form = cgi.FieldStorage(fp=self.rfile, headers=self.headers,
                                 environ={'REQUEST_METHOD': 'POST'})
         userid = form.getvalue("user")
-
-
-
-
-
-
+        print("post from "+userid)
+        now = datetime.datetime.now()
+        day = datetime.timedelta(days=1)
+        before24 = now-day
 
         global session
-        query = "select * from records where id = %s AND time <= %s "
-        rows = session.execute(query, (id,t))
-
-        jsonData = {
-
-            'user': userid
-        }
-
-
-
-        json_str = json.dumps(jsonData)
-        json_encode = json_str.encode("utf-8")
+        query = "select * from records where id = %s AND time > %s AND time <= %s "
+        rows = session.execute(query, (userid, before24, now))
+        results = []
+        for row in rows:
+            jsonData={'class':row.food,
+                      'calories':row.calorie,
+                      'fat':row.fat,
+                      'fiber':row.fiber,
+                      'protein':row.protein,
+                      'carbo':row.carbo,
+                      'photo':row.photo
+                    }
+            json_str = json.dumps(jsonData)
+            results.append(json_str)
+        print(str(len(results))+"records found")
+        results_str = '|'.join(results)
+        print(len(results_str))
+        results_encode = results_str.encode("utf-8")
 
         self.send_response(200)
         self.end_headers()
-        self.wfile.write(json_encode)
+        self.wfile.write(results_encode)
 
 
 def main():
     try:
         # link to cluster
         cluster = Cluster(['G401', 'G402'])  # 随意写两个就能找到整个集群
-        session = cluster.connect()
         global session
-        server = HTTPServer(('10.244.12.12', 11450), MyHandler) #启动服务
+        session = cluster.connect("fooddiary")
+        #global session
+        server = HTTPServer(('10.244.10.12', 11451), MyHandler) #启动服务
         print('Welcome to the server.......')
         server.serve_forever()  # 一直运行
     except KeyboardInterrupt:

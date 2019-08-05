@@ -17,7 +17,7 @@ def get_pixel_num(img):
     # The image of here is a cropped image in PIL.Image format
     # if input is img : cv2 format
     #img = np.asarray(image)
-    #img = cv2.resize(img, None, fx=0.2, fy=0.2) #resize to get faster time
+    img = cv2.resize(img, None, fx=0.2, fy=0.2) #resize to get faster time
     mask = np.zeros(img.shape[:2], np.uint8)
     SIZE = (1, 65)
     bgdModle = np.zeros(SIZE, np.float64)

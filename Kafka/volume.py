@@ -23,7 +23,7 @@ def get_pixel_num(img):
     fgdModle = np.zeros(SIZE, np.float64)
     rect = (1, 1, img.shape[1], img.shape[0])
 
-    cv2.grabCut(img, mask, rect, bgdModle, fgdModle, 5, cv2.GC_INIT_WITH_RECT)
+    cv2.grabCut(img, mask, rect, bgdModle, fgdModle, 1, cv2.GC_INIT_WITH_RECT)
     pixel_num = np.bincount(mask.reshape(-1))[3]
 
     return pixel_num

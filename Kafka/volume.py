@@ -76,7 +76,7 @@ def calculate_nutrition(food_imgs, food_classes, spoon_img, para, nutrition):
     return np.round(results, 3)
 
 
-
+'''
 if __name__ == '__main__':
     image = Image.open("../8.jpg")
     spoon_img = np.asarray(image.crop((276, 139, 329, 330)))
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     print(result)
     print(np.sum(result, axis=0))
     print(timeit.default_timer()-t)
-'''
+
 Found 8 boxes for 8.img
 diningtable 0.77 (14, 4) (539, 327)
 carrot 0.31 (107, 60) (160, 90)

@@ -3,7 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="e8346f67-79c7-4c56-87ac-4eacdfe9148d" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Kafka/volume.py" beforeDir="false" afterPath="$PROJECT_DIR$/Kafka/volume.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Kafka/backupdetect.py" beforeDir="false" afterPath="$PROJECT_DIR$/Kafka/backupdetect.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Kafka/detect.py" beforeDir="false" afterPath="$PROJECT_DIR$/Kafka/detect.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -34,11 +35,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Kafka/volume.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1001">
-              <caret line="87" column="46" lean-forward="true" selection-start-line="87" selection-start-column="46" selection-end-line="87" selection-end-column="46" />
+            <state relative-caret-position="158">
+              <caret line="27" column="8" lean-forward="true" selection-start-line="27" selection-start-column="8" selection-end-line="27" selection-end-column="8" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -61,8 +62,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Kafka/detect.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1293">
-              <caret line="160" column="26" lean-forward="true" selection-start-line="160" selection-start-column="26" selection-end-line="160" selection-end-column="26" />
+            <state relative-caret-position="354">
+              <caret line="132" column="69" lean-forward="true" selection-start-line="132" selection-start-column="69" selection-end-line="132" selection-end-column="69" />
               <folding>
                 <element signature="e#18#55#0" expanded="true" />
               </folding>
@@ -82,8 +83,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/command">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="6" column="23" lean-forward="true" selection-start-line="6" selection-start-column="23" selection-end-line="6" selection-end-column="23" />
+            <state relative-caret-position="68">
+              <caret line="4" column="23" lean-forward="true" selection-start-line="4" selection-start-column="23" selection-end-line="4" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -93,11 +94,11 @@
           <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Kafka/backupdetect.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="960">
-              <caret line="160" column="33" lean-forward="true" selection-start-line="160" selection-start-column="33" selection-end-line="160" selection-end-column="33" />
+            <state relative-caret-position="-1805">
+              <caret line="44" lean-forward="true" selection-start-line="44" selection-end-line="44" />
               <folding>
                 <element signature="e#18#55#0" expanded="true" />
               </folding>
@@ -172,10 +173,10 @@
         <option value="$PROJECT_DIR$/cassandra/initial.py" />
         <option value="$PROJECT_DIR$/Kafka/classify.py" />
         <option value="$PROJECT_DIR$/Kafka/yolov3.py" />
-        <option value="$PROJECT_DIR$/Kafka/detect.py" />
         <option value="$PROJECT_DIR$/cassandra/server.py" />
-        <option value="$PROJECT_DIR$/Kafka/backupdetect.py" />
         <option value="$PROJECT_DIR$/Kafka/volume.py" />
+        <option value="$PROJECT_DIR$/Kafka/backupdetect.py" />
+        <option value="$PROJECT_DIR$/Kafka/detect.py" />
       </list>
     </option>
   </component>
@@ -190,7 +191,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -217,6 +217,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -315,6 +316,9 @@
       <module name="Calories" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Kafka" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -518,7 +522,21 @@
       <option name="project" value="LOCAL" />
       <updated>1564993411272</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="update command">
+      <created>1564994120725</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1564994120725</updated>
+    </task>
+    <task id="LOCAL-00023" summary="fix bug">
+      <created>1564994252736</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1564994252736</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TodoView">
@@ -534,7 +552,7 @@
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.80985916" visible="true" weight="0.28050596" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.80985916" visible="true" weight="0.28050596" />
       <window_info id="Structure" order="1" sideWeight="0.19014084" side_tool="true" weight="0.4534413" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -544,10 +562,10 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.3289689" />
-      <window_info anchor="bottom" id="Version Control" order="7" visible="true" weight="0.1898527" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.5744681" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.26841244" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="10" weight="0.3797054" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="10" visible="true" weight="0.31587562" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -612,7 +630,9 @@
     <MESSAGE value="modify detect" />
     <MESSAGE value="add cassandra server, complete backupdetect" />
     <MESSAGE value="optimize the timing for volume" />
-    <option name="LAST_COMMIT_MESSAGE" value="optimize the timing for volume" />
+    <MESSAGE value="update command" />
+    <MESSAGE value="fix bug" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix bug" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Kafka/yolov3_tf/model.py">
@@ -723,17 +743,17 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dataset/shape_density.csv">
-      <provider selected="true" editor-type-id="csv-text-editor">
-        <state>
-          <caret column="7" selection-start-column="7" selection-end-column="7" />
-        </state>
-      </provider>
       <provider editor-type-id="csv-table-editor">
         <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
       </provider>
       <provider editor-type-id="text-editor">
         <state relative-caret-position="392">
           <caret line="171" column="12" selection-start-line="171" selection-start-column="12" selection-end-line="171" selection-end-column="12" />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="csv-text-editor">
+        <state>
+          <caret column="7" selection-start-column="7" selection-end-column="7" />
         </state>
       </provider>
     </entry>
@@ -832,6 +852,8 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Kafka/testYolov3.py" />
+    <entry file="file://$PROJECT_DIR$/Kafka/bkinceptionv3.py" />
     <entry file="file://$PROJECT_DIR$/Kafka/yolov3.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5236">
@@ -859,6 +881,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/command">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="23" lean-forward="true" selection-start-line="4" selection-start-column="23" selection-end-line="4" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Kafka/volume.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="158">
+          <caret line="27" column="8" lean-forward="true" selection-start-line="27" selection-start-column="8" selection-end-line="27" selection-end-column="8" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/commnd">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/cassandra/initial.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
@@ -866,26 +908,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Kafka/testYolov3.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/commnd">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Kafka/bkinceptionv3.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1071">
-          <caret line="63" column="38" selection-start-line="63" selection-start-column="38" selection-end-line="63" selection-end-column="38" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Kafka/detect.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1293">
-          <caret line="160" column="26" lean-forward="true" selection-start-line="160" selection-start-column="26" selection-end-line="160" selection-end-column="26" />
+        <state relative-caret-position="354">
+          <caret line="132" column="69" lean-forward="true" selection-start-line="132" selection-start-column="69" selection-end-line="132" selection-end-column="69" />
           <folding>
             <element signature="e#18#55#0" expanded="true" />
           </folding>
@@ -894,27 +920,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Kafka/backupdetect.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="960">
-          <caret line="160" column="33" lean-forward="true" selection-start-line="160" selection-start-column="33" selection-end-line="160" selection-end-column="33" />
+        <state relative-caret-position="-1805">
+          <caret line="44" lean-forward="true" selection-start-line="44" selection-end-line="44" />
           <folding>
             <element signature="e#18#55#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/command">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="23" lean-forward="true" selection-start-line="6" selection-start-column="23" selection-end-line="6" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Kafka/volume.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1001">
-          <caret line="87" column="46" lean-forward="true" selection-start-line="87" selection-start-column="46" selection-end-line="87" selection-end-column="46" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>

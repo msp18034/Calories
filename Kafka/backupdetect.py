@@ -120,7 +120,7 @@ class Spark_Calorie_Calculator():
                 # classification part
                 start_c = timer()
                 pimg = classify.process_img(food_imgs)
-                _,p_result = self.model_cls.predict(pimg)
+                _, p_result = self.model_cls.predict(pimg)
                 indices = [np.argmax(i) for i in p_result]
                 food_classes = [self.class_names[x] for x in indices]
                 self.logger.info('classification complete! time:'+str(timer()-start_c))

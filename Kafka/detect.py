@@ -4,26 +4,29 @@ import base64
 import json
 import numpy as np
 from timeit import default_timer as timer
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 import cv2
 from random import randint
 from io import BytesIO
-import keras
+
 # Streaming imports
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
 from kafka import KafkaProducer
-from keras.models import load_model, model_from_json
+from keras.models import load_model
+
+#cassandra imports
+from cassandra.cluster import Cluster
+from datetime import datetime
+
 # Model imports
 import yolov3 
 import classify
 import volume
-import tensorflow as tf
 
 
 def evalPar(iterator):
-    result = []
     for record in iterator:
         start_p = timer()
         event = json.loads(record[1])
@@ -32,7 +35,7 @@ def evalPar(iterator):
         image = Image.open(stream)
         img = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
         # image: PIL Image
-        # img: cv2 image 这个最好cache一下！
+        # img: cv2 image
 
         # YOLO part
         start_y = timer()
@@ -41,24 +44,24 @@ def evalPar(iterator):
         pimage = yolov3.process_image(img)
         outs = bdmodel_od.value.predict(pimage)
         boxes, classes, scores = yolov3._yolo_out(outs, img.shape)
-        # result.append(yolov3._yolo_out(outs, img.shape))
-
         spoon_img, bowl_boxes, food_imgs = yolov3.fliter(img, boxes, scores, classes)
-        # result.append( yolov3.fliter(img, boxes, scores, classes))
 
         if len(spoon_img) > 0 and len(bowl_boxes) > 0:
             # classification part
             start_c = timer()
             pimg = classify.process_img(food_imgs)
-
             _, p_result = bdmodel_cls.value.predict(pimg)
             indices = [np.argmax(i) for i in p_result]
             food_classes = [class_names[x] for x in indices]
-            result.append(food_classes)
+
             # volume part
             start_v = timer()
             c_result = volume.calculate_nutrition(food_imgs, indices, spoon_img, para, nutrition)
             calories = c_result[:, 0].tolist()
+            carbo = c_result[:, 1].tolist()
+            protein = c_result[:, 3].tolist()
+            fat = c_result[:, 2].tolist()
+            fiber = c_result[:, 4].tolist()
 
             # draw part
             start_d = timer()
@@ -67,7 +70,14 @@ def evalPar(iterator):
         else:
             food_classes = ['Not Found']
             calories = [0]
+            carbo = [0]
+            fat = [0]
+            fiber = [0]
+            protein = [0]
             drawn_image = image
+            start_c = timer()
+            start_v = timer()
+            start_d = timer()
 
         # output
         img_out_buffer = BytesIO()
@@ -79,47 +89,48 @@ def evalPar(iterator):
         delta = end - start_p
 
         output = {'user': event['user'],
-                  'start': event['start'],
                   'class': food_classes,
                   'calories': calories,
+                  'fat': fat,
+                  'protein': protein,
+                  'carbo': carbo,
+                  'fiber': fiber,
                   'yolo': start_c - start_y,
                   'classification': start_v - start_c,
                   'volume': start_d - start_v,
-                  # 'drawn_img': drawn_img_b,
+                  'drawn_img': drawn_image_b,
                   'process_time': delta
                   }
         output = json.dumps(output)
-        # outputResult(output)
         yield output
 
-    # yield result
+
 def handler(timestamp, message):
     """Collect messages, detect object and send to kafka endpoint."""
-    #records = message.collect()
-    # For performance reasons, we only want to process the newest message
-    #logger.info('\033[3' + str(randint(1, 7)) + ';1m' +  # Color
-    #                '-' * 25 +
-    #                '[ NEW MESSAGES: ' + str(len(records)) + ' ]'
-    #                + '-' * 25 +
-    #                '\033[0m')  # End color
-    start_r = timer()
-
-    #result = message.mapPartitions(evalPar)
-    #result = message.map(eval)
-    print("------------------finished map--------------------------")
     records = message.collect()
-    print("-----------------", len(records), "------------------------")
+    # For performance reasons, we only want to process the newest message
+    logger.info('\033[3' + str(randint(1, 7)) + ';1m' +  # Color
+                    '-' * 20 +
+                    '[ PROCESSED IMAGE: ' + str(len(records)) + ' ]'
+                    + '-' * 20 +
+                    '\033[0m')  # End color
+
     for record in records:
-        print(record)
-        outputResult(record)        
- 
-    print("------------------finished count------------------------")
+        outputResult(record)
 
 
 def outputResult(message):
     logger.info("Now sending out....")
     producer.send(topic_for_produce, message.encode('utf-8'))
     producer.flush()
+    time = datetime.now()
+
+    jsondata = json.loads(message)
+    query = "INSERT INTO records (id, time, photo, food, calorie, carbo, protein, fat, fiber)" \
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    session.execute(query, (jsondata['user'], time, jsondata['drawn_img'], jsondata['class'],
+                                 jsondata['calories'], jsondata['carbo'], jsondata['protein'],
+                                 jsondata['fat'], jsondata['fiber']))
 
 
 
@@ -142,6 +153,11 @@ log4jLogger.LogManager.getLogger('akka').setLevel(log_level)
 log4jLogger.LogManager.getLogger('kafka').setLevel(log_level)
 logger = log4jLogger.LogManager.getLogger(__name__)
 
+# connect to cassandra
+cluster = Cluster(['G401', 'G402'])  # 随意写两个就能找到整个集群
+session = cluster.connect("fooddiary")
+
+# load and broadcast model
 model_od = load_model("/home/hduser/model_weights/yolo.h5")
 print("loaded model object detection")
 bdmodel_od = sc.broadcast(model_od)
@@ -151,7 +167,7 @@ model_cls = load_model("/home/hduser/model_weights/cusine.h5")
 print("loaded model classification")
 bdmodel_cls = sc.broadcast(model_cls)
 print("broadcasted model classification")
-#bdPro=sc.broadcast(producer)
+
 class_name_path = "/home/hduser/Calories/dataset/172FoodList.txt"
 class_names = classify.read_class_names(class_name_path)
 para_path = '/home/hduser/Calories/dataset/shape_density.csv'
@@ -168,7 +184,7 @@ groupid = "test-consumer-group"
 
 """Start consuming from Kafka endpoint and detect objects."""
 kvs = KafkaUtils.createStream(ssc, zookeeper, groupid, topic_to_consume)
-kvs=kvs.mapPartitions(evalPar)
+kvs = kvs.mapPartitions(evalPar)
 #kvs = KafkaUtils.createDirectStream(ssc, topics=['inputImage2'],kafkaParams = {"metadata.broker.list":kafka_endpoint})
 kvs.foreachRDD(handler)
 ssc.start()

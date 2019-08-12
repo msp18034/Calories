@@ -32,8 +32,9 @@ class Kafka_consumer():
                 print("Classification time",res['classification'])
                 print("Volume time",res['volume'])
                 print("Total time", str(res['process_time']))
+                print(timer()-res['start'])
                 print("----------------------------------------------------")
-                #yield message
+                yield res
         except KeyboardInterrupt:
             print("KeyboardInterrupt")
 
@@ -51,9 +52,12 @@ def main():
     #\serialized_key_size=-1, serialized_value_size=21)
     consumer = Kafka_consumer('G401', 9092,"outputResult","test-consumer-group")
     #f=open('f.txt','w')
+    file="yolo.txt"
+    f=open(file,'a+')
     message = consumer.consume_data()
-    for i in message:
-        print(i)
+    for res in message:
+        #print(i)
+        f.write(str(res['yolo'])+" "+str(res['classification'])+" "+str(res['volume'])+" "+str(res['process_time'])+'\n')
 
 
 if __name__ == '__main__':

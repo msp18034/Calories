@@ -132,6 +132,15 @@ def outputResult(message):
 
     producer.send(topic_for_produce, message.encode('utf-8'))
     producer.flush()
+    time = datetime.now()
+
+    jsondata = json.loads(message)
+    query = "INSERT INTO records (id, time, photo, food, calorie, carbo, protein, fat, fiber)" \
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    session.execute(query, (jsondata['user'], time, jsondata['drawn_img'], jsondata['class'],
+                                 jsondata['calories'], jsondata['carbo'], jsondata['protein'],
+                                 jsondata['fat'], jsondata['fiber']))
+
 
 
 topic_to_consume = {"inputImage": 0, "inputImage": 1, "inputImage": 2}
@@ -143,7 +152,7 @@ producer = KafkaProducer(bootstrap_servers=kafka_endpoint)
 
 # Load Spark Context
 sc = SparkContext(appName='MultiFood_detection')
-ssc = StreamingContext(sc, 0.08) # odcast(producer)Z oo
+ssc = StreamingContext(sc, 0.4)  # odcast(producer)Z oo
 
 # Make Spark logging less extensive
 log4jLogger = sc._jvm.org.apache.log4j
@@ -152,6 +161,10 @@ log4jLogger.LogManager.getLogger('org').setLevel(log_level)
 log4jLogger.LogManager.getLogger('akka').setLevel(log_level)
 log4jLogger.LogManager.getLogger('kafka').setLevel(log_level)
 logger = log4jLogger.LogManager.getLogger(__name__)
+
+# connect to cassandra
+cluster = Cluster(['G401', 'G402'])  # 随意写两个就能找到整个集群
+session = cluster.connect("fooddiary")
 
 # load and broadcast model
 model_od = load_model("/home/hduser/model_weights/yolo.h5")

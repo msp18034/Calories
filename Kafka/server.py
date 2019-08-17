@@ -25,7 +25,7 @@ class MyHandler(BaseHTTPRequestHandler):
         producer = Kafka_producer("G4master", 9092, "inputImage")
         producer.sendjsondata(result)
 
-        consumer = Kafka_consumer("G4master", 9092, "outputResult1")
+        consumer = Kafka_consumer("G4master", 9092, "outputResult")
         jsonData = consumer.getUserFeedback(userid)
         json_str = json.dumps(jsonData)
         json_encode = json_str.encode("utf-8")

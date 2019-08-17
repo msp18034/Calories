@@ -24,9 +24,9 @@ class Kafka_consumer():
             for msg in self.consumer:
                 dmsg = msg.value.decode("utf-8")
                 jmsg = json.loads(dmsg)
-                #if jmsg['user'] == userid:
-                self.consumer.close()
-                return jmsg
+                if jmsg['user'] == userid:
+                #self.consumer.close()
+                   return jmsg
         except KafkaError as e:
             print(e)
 

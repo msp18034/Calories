@@ -101,7 +101,7 @@ def evalPar(iterator):
                   'yolo': start_c - start_y,
                   'classification': start_v - start_c,
                   'volume': start_d - start_v,
-                  'drawn_img': drawn_img_b,
+                  'drawn_img': drawn_image_b,
                   'process_time': delta,
                   'end':end
                   }
@@ -114,11 +114,15 @@ def handler(timestamp, message):
     start_r = time.time()
     records = message.collect()
     # For performance reasons, we only want to process the newest message
-    logger.info('\033[3' + str(randint(1, 7)) + ';1m' +  # Color
-                    '-' * 20 +
-                    '[ PROCESSED IMAGE: ' + str(len(records)) + ' ]'
-                    + '-' * 20 +
-                    '\033[0m')  # End color
+    if len(records)>0:
+        logger.info('\033[3' + str(randint(1, 7)) + ';1m' +  # Color
+                 '-' * 20 +
+                '[ PROCESSED IMAGE: ' + str(len(records)) + ' ]'
+                 + '-' * 20 +
+                '\033[0m')  # End color
+    else:
+        logger.info('-' * 20 + ' No record received '+ '-' * 20)
+
     for record in records:
         print(time.time()-start_r)
         record = json.dumps({**json.loads(record), **{"endtime": time.time()-start_r}})
@@ -143,7 +147,7 @@ producer = KafkaProducer(bootstrap_servers=kafka_endpoint)
 
 # Load Spark Context
 sc = SparkContext(appName='MultiFood_detection')
-ssc = StreamingContext(sc, 0.08) # odcast(producer)Z oo
+ssc = StreamingContext(sc, 0.11) # odcast(producer)Z oo
 
 # Make Spark logging less extensive
 log4jLogger = sc._jvm.org.apache.log4j
@@ -164,7 +168,7 @@ print("loaded model classification")
 bdmodel_cls = sc.broadcast(model_cls)
 print("broadcasted model classification")
 
-class_name_path = "/home/hduser/Calories/dataset/172FoodList.txt"
+class_name_path = "/home/hduser/Calories/dataset/172FoodList-en.txt"
 class_names = classify.read_class_names(class_name_path)
 para_path = '/home/hduser/Calories/dataset/shape_density.csv'
 # [编号，shape_type, 参数, 密度g/ml]

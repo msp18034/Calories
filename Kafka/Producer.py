@@ -57,7 +57,7 @@ def main():
             }
             print(str(i+1), "ok")
             producer.sendjsondata(result)
-            time.sleep(5)
+            time.sleep(0.5)
         time.sleep(10)
 
 

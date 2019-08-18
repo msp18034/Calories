@@ -1,7 +1,9 @@
 # Image-based Dietary Assessment System in the Cloud
 
 Web page: https://i.cs.hku.hk/~msp18034/
-
+Demo video: https://drive.google.com/drive/u/0/folders/1Q9Hx688_y9gvUNgWtYKfSeJEQDuVHwpS
+Classification model repository: https://github.com/msp18034/ClassificationModel
+Mobile application repository: https://github.com/msp18034/FoodDiary
 
 
 ## Introduction

@@ -1,3 +1,8 @@
+"""
+@Time:   2019-08-18
+@author: msp18034
+"""
+
 import numpy as np
 from keras.models import load_model, model_from_json
 import cv2
@@ -12,37 +17,13 @@ from PIL import Image
 """
 # _t1 = 0.25  # obj_threshold
 # _t2 = 0.45  # nms_threshold
-# model_path = '/home/hduser/model_weights/yolo.h5'
-# model = load_model(model_path)
-# model._make_predict_function()
-# classes_path = '/home/hduser/Calories/dataset/coco_classes.txt'
-# classes_path = '../dataset/coco_classes.txt'
-# class_name = _get_class(classes_path)
 
-def test():
-    print("ttttttttttttttttt")
+
 def _get_class(path):
     with open(path) as f:
         class_names = f.readlines()
     class_names = [c.strip() for c in class_names]
     return class_names
-
-
-def deserialize_keras_model(dictionary):
-    """Deserialized the Keras model using the specified dictionary."""
-    architecture = dictionary['model']
-    weights = dictionary['weights']
-    model = model_from_json(architecture)
-    model.set_weights(weights)
-    return model
-
-
-def serialize_keras_model(model):
-    """Serializes the specified Keras model into a dictionary."""
-    dictionary = {}
-    dictionary['model'] = model.to_json()
-    dictionary['weights'] = model.get_weights()
-    return dictionary
 
 
 def _sigmoid(x):
@@ -168,6 +149,7 @@ def _nms_boxes(boxes, scores):
 
     return keep
 
+
 def _yolo_out(outs, shape):
     """Process output of yolo base net.
 
@@ -225,28 +207,6 @@ def _yolo_out(outs, shape):
     return boxes, classes, scores
 
 
-def predict(image, shape):
-    """Detect the objects with yolo.
-
-    # Arguments
-        image: ndarray, processed input image.
-        shape: shape of original image.
-
-    # Returns
-        boxes: ndarray, boxes of objects.
-        classes: ndarray, classes of objects.
-        scores: ndarray, scores of objects.
-    """
-    #s = time.time()
-    #model = deserialize_keras_model(model_dic)
-    #e = time.time()
-    #print("deserialize model time:", e-s)
-    outs = model.predict(image)
-    boxes, classes, scores = _yolo_out(outs, shape)
-
-    return boxes, classes, scores
-
-
 def process_image(img):
     """Resize, reduce and expand image.
 
@@ -283,7 +243,6 @@ def fliter(img, boxes, scores, classes):
         box = (left, top, right, bottom)
 
         if cl == 45:
-            #cropped_img = image.crop(box)
             cropped_img = img[top:bottom, left:right, :]
             food_img.append(cropped_img)
             bowl_box.append(box)
@@ -296,7 +255,7 @@ def fliter(img, boxes, scores, classes):
     return spoon_img, bowl_box, food_img
 
 
-def detect_food(image):
+def detect_food(image, model):
     """Use yolo v3 to detect images.
 
     # Argument:
@@ -310,10 +269,11 @@ def detect_food(image):
     # image: PIL Image
     # img: cv2 image
     img = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
-    pimage = process_image(img)
+    pimg = process_image(img)
 
     start = time.time()
-    boxes, classes, scores = predict(pimage, img.shape)
+    outs = model.predict(pimg)
+    boxes, classes, scores = _yolo_out(outs, img.shape)
     spoon_img, bowl_box, food_img = fliter(img, boxes, scores, classes)
     end = time.time()
     print('Total YOLO time: {0:.2f}s'.format(end - start))
@@ -323,6 +283,14 @@ def detect_food(image):
 
 if __name__ == "__main__":
     p = Image.open("../0.jpg")
-    bowl_box, food_img, spoon_img = detect_food(p)
+
+    model_path = '/home/hduser/model_weights/yolo.h5'
+    model = load_model(model_path)
+    model._make_predict_function()
+    classes_path = '/home/hduser/Calories/dataset/coco_classes.txt'
+    classes_path = '../dataset/coco_classes.txt'
+    class_name = _get_class(classes_path)
+
+    bowl_box, food_img, spoon_img = detect_food(p,model)
 
 

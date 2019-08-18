@@ -1,3 +1,8 @@
+"""
+@Time:   2019-08-18
+@author: msp18034
+"""
+
 # Utility imports
 from __future__ import print_function
 import base64
@@ -103,7 +108,7 @@ def evalPar(iterator):
                   'volume': start_d - start_v,
                   'drawn_img': drawn_image_b,
                   'process_time': delta,
-                  'end':end
+                  'end': end
                   }
         output = json.dumps(output)
         yield output

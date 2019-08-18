@@ -1,3 +1,8 @@
+"""
+@Time:   2019-08-18
+@author: msp18034
+"""
+
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from cassandra.cluster import Cluster
 from io import BytesIO
@@ -26,13 +31,13 @@ class MyHandler(BaseHTTPRequestHandler):
         rows = session.execute(query, (userid, before24, now))
         results = []
         for row in rows:
-            jsonData={'class':row.food,
-                      'calories':row.calorie,
-                      'fat':row.fat,
-                      'fiber':row.fiber,
-                      'protein':row.protein,
-                      'carbo':row.carbo,
-                      'photo':row.photo
+            jsonData={'class': row.food,
+                      'calories': row.calorie,
+                      'fat': row.fat,
+                      'fiber': row.fiber,
+                      'protein': row.protein,
+                      'carbo': row.carbo,
+                      'photo': row.photo
                     }
             json_str = json.dumps(jsonData)
             results.append(json_str)

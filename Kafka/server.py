@@ -1,9 +1,15 @@
+"""
+@Time:   2019-08-18
+@author: msp18034
+"""
+
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from Producer import Kafka_producer
 from Consumer import Kafka_consumer
 from io import BytesIO
 import cgi
 import json
+
 
 class MyHandler(BaseHTTPRequestHandler):
 

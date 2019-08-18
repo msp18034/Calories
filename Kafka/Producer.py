@@ -1,3 +1,8 @@
+"""
+@Time:   2019-08-18
+@author: msp18034
+"""
+
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
 import json
@@ -19,10 +24,6 @@ class Kafka_producer():
                "G405:9092,G406:9092,G407:9092,G408:9092,G409:9092,G410:9092,"\
                "G411:9092,G412:9092,G413:9092,G414:9092,G415:9092"
         self.producer = KafkaProducer(bootstrap_servers=kafka_endpoint)
-        #self.producer = KafkaProducer(bootstrap_servers='{kafka_host}:{kafka_port}'.format(
-        #    kafka_host=self.kafkaHost,
-        #    kafka_port=self.kafkaPort
-        #))
 
     def sendjsondata(self, result):
         try:
@@ -40,7 +41,6 @@ def image_to_base64(image_path):
     img.save(output_buffer, format='JPEG')
     byte_data = output_buffer.getvalue()
     base64_str = base64.b64encode(byte_data).decode('utf-8')
-    #print(base64_str)
     return base64_str
 
 

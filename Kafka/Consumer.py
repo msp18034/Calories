@@ -1,3 +1,8 @@
+"""
+@Time:   2019-08-18
+@author: msp18034
+"""
+
 from kafka import KafkaConsumer
 from kafka.errors import KafkaError
 import json
@@ -20,13 +25,11 @@ class Kafka_consumer():
 
     def getUserFeedback(self, userid):
         try:
-            #msg = next(self.consumer)
             for msg in self.consumer:
                 dmsg = msg.value.decode("utf-8")
                 jmsg = json.loads(dmsg)
                 if jmsg['user'] == userid:
-                #self.consumer.close()
-                   return jmsg
+                    return jmsg
         except KafkaError as e:
             print(e)
 

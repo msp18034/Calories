@@ -1,3 +1,8 @@
+"""
+@Time:   2019-08-18
+@author: msp18034
+"""
+
 import numpy as np
 import colorsys
 import keras
@@ -75,6 +80,7 @@ def eval(single_foods):
     classes = [class_names[x] for x in result]
     return index, classes
 '''
+
 
 def drawboxes(img, boxes, indices, final_classes, calories):
     colors = get_color(173)

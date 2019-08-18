@@ -1,9 +1,13 @@
 # Image-based Dietary Assessment System in the Cloud
 
-Web page: https://i.cs.hku.hk/~msp18034/ <br>
-Demo video: https://drive.google.com/drive/u/0/folders/1Q9Hx688_y9gvUNgWtYKfSeJEQDuVHwpS <br>
-Classification model repository: https://github.com/msp18034/ClassificationModel <br>
-Mobile application repository: https://github.com/msp18034/FoodDiary <br>
+Web page: https://i.cs.hku.hk/~msp18034/ 
+
+Demo video: https://drive.google.com/drive/u/0/folders/1Q9Hx688_y9gvUNgWtYKfSeJEQDuVHwpS 
+
+Classification model repository: https://github.com/msp18034/ClassificationModel 
+
+Mobile application repository: https://github.com/msp18034/FoodDiary 
+
 
 
 ## Introduction
@@ -16,27 +20,18 @@ It is a real-time food recognition and nutrition estimating system on  **Spark S
 
 - Estimate calorie and nutrition of food in good accuracy
 
-  ![](.\images\objective.png)
+  <img width="450" src=".\images\objective.png"/>
+
 
 ## System design
 
-In our project, we proposed a system that can directly detect, identify
-dishes and calculate calories and nutrition values by a photo of a meal that token
-on the top-view. 
+In our project, we proposed a system that can directly detect, identify dishes and calculate calories and nutrition values by a photo of a meal that token on the top-view. 
 
-- The [client end](https://github.com/msp18034/FoodDiary) of our system could give personalized
-  assessment to users. 
+- The [client end](https://github.com/msp18034/FoodDiary) of our system could give personalized assessment to users. 
+  
+- In terms of the [server end](https://github.com/msp18034/Calories), the strategy we proposed is utilizing YOLOv3 to detect table wares and further classifying dishes to realize multi-dish recognition. A multi-task DCNN model is trained to identify food category with cuisine method as auxiliary task, and [our model](https://github.com/msp18034/ClassificationModel) shows a higher accuracy than individual DCNN model with 6% improvement. To tackle the storage problem of big DCNN model in mobile application and the concurrency bottleneck of traditional server, we deploy our backend to a cloud cluster and develop a scalable spark streaming application that achieves nearly real-time inference. 
 
-- In terms of the [server end](https://github.com/msp18034/Calories), the strategy we proposed is
-  utilizing YOLOv3 to detect table wares and further classifying dishes to
-  realize multi-dish recognition. A multi-task DCNN model is trained to identify
-  food category with cuisine method as auxiliary task, and [our model](https://github.com/msp18034/ClassificationModel) shows a higher
-  accuracy than individual DCNN model with 6% improvement. To tackle the storage
-  problem of big DCNN model in mobile application and the concurrency bottleneck
-  of traditional server, we deploy our backend to a cloud cluster and develop a
-  scalable spark streaming application that achieves nearly real-time inference. 
-
-![](.\images\workflow.png)
+<img src=".\images\workflow.png"/>
 
 
 
@@ -46,7 +41,7 @@ on the top-view.
 
 Build hadoop, spark, kafka, cassandra cluster on your machines.
 
-![](D:\0study\Project\code\Calories\images\structure.png)
+<img src=".\images\structure.png"/>
 
 ##### Our environment
 

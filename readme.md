@@ -16,7 +16,7 @@ It is a real-time food recognition and nutrition estimating system on  **Spark S
 
 - Estimate calorie and nutrition of food in good accuracy
 
-  ![](D:\0study\Project\code\Calories\images\objective.png)
+  ![](.\images\objective.png)
 
 ## System design
 
@@ -36,7 +36,7 @@ on the top-view.
   of traditional server, we deploy our backend to a cloud cluster and develop a
   scalable spark streaming application that achieves nearly real-time inference. 
 
-![](D:\0study\Project\code\Calories\images\workflow.png)
+![](.\images\workflow.png)
 
 
 
@@ -91,6 +91,8 @@ python  ./cassandra/initial.py
 
 The pre-trained YOLOv3 model and our multi-task DCNN model could be download [here](https://drive.google.com/drive/folders/1zfG5s2SIJzflJkg7F-ULhEE9NgvPL6vj?usp=sharing)<br>
 They are placed in the folder /home/hduser/model_weights/. If not running on G4master, remember to modify the model path in detect_db.py
+
+
 
 ### Execution steps
 

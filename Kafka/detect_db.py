@@ -180,7 +180,7 @@ print("loaded model object detection")
 bdmodel_od = sc.broadcast(model_od)
 print("broadcasted model detection")
 
-model_cls = load_model("/home/hduser/model_weights/cusine.h5")
+model_cls = load_model("/home/hduser/model_weights/cuisine.h5")
 print("loaded model classification")
 bdmodel_cls = sc.broadcast(model_cls)
 print("broadcasted model classification")

@@ -87,8 +87,8 @@ python  ./cassandra/initial.py
 
 ##### Trained models
 
-The pre-trained YOLOv3 model and our multi-task model could be download [here](https://drive.google.com/drive/folders/1zfG5s2SIJzflJkg7F-ULhEE9NgvPL6vj?usp=sharing)
-They are placed in the root dictionary under the user hduser. If not run in our cluster, need to modify detect_db.py to change the model path.
+The pre-trained YOLOv3 model and our multi-task DCNN model could be download [here](https://drive.google.com/drive/folders/1zfG5s2SIJzflJkg7F-ULhEE9NgvPL6vj?usp=sharing)<br>
+They are placed in the folder /home/hduser/model_weights/. If not running on G4master, remember to modify the model path in detect_db.py
 
 ### Execution steps
 
